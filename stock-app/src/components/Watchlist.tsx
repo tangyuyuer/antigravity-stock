@@ -158,13 +158,13 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
                     <td className="px-6 py-5">
                       <div className="flex flex-col">
                         <span className={`text-lg font-black tracking-tight ${isUp ? 'text-red-500' : 'text-emerald-500'}`}>{s.name}</span>
-                        <span className="text-xs text-gray-500 font-mono tracking-widest">{s.code}</span>
+                        <span className="text-xs text-gray-500 font-sans tracking-tight uppercase">{s.code}</span>
                       </div>
                     </td>
-                    <td className={`px-6 py-5 text-xl font-mono font-black ${isUp ? 'stock-up' : 'stock-down'}`}>
+                    <td className={`px-6 py-5 text-xl font-sans font-black ${isUp ? 'stock-up' : 'stock-down'}`}>
                       {s.price}
                     </td>
-                    <td className={`px-6 py-5 text-lg font-mono font-bold ${isUp ? 'stock-up' : 'stock-down'}`}>
+                    <td className={`px-6 py-5 text-lg font-sans font-bold ${isUp ? 'stock-up' : 'stock-down'}`}>
                       {isUp ? '+' : ''}{s.pct}%
                     </td>
                     <td className="px-6 py-5" onClick={(e) => e.stopPropagation()}>
@@ -174,24 +174,24 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
                           placeholder="成本价"
                           value={pos.cost}
                           onChange={(e) => updatePosition(s.code, 'cost', e.target.value)}
-                          className="bg-black/40 border border-white/10 rounded-lg w-28 px-3 py-1.5 text-xs focus:border-blue-500 outline-none transition-all"
+                          className="bg-black/40 border border-white/10 rounded-lg w-28 px-3 py-1.5 text-sm font-sans focus:border-blue-500 outline-none transition-all"
                         />
                         <input
                           type="number"
                           placeholder="持仓量"
                           value={pos.amount}
                           onChange={(e) => updatePosition(s.code, 'amount', e.target.value)}
-                          className="bg-black/40 border border-white/10 rounded-lg w-28 px-3 py-1.5 text-xs focus:border-blue-500 outline-none transition-all"
+                          className="bg-black/40 border border-white/10 rounded-lg w-28 px-3 py-1.5 text-sm font-sans focus:border-blue-500 outline-none transition-all"
                         />
                       </div>
                     </td>
                     <td className={`px-6 py-5`}>
                       {profit !== 0 ? (
                         <div className="flex flex-col">
-                          <span className={`text-xl font-black ${profit >= 0 ? 'text-red-500' : 'text-emerald-500'}`}>
+                          <span className={`text-xl font-black font-sans ${profit >= 0 ? 'text-red-500' : 'text-emerald-500'}`}>
                             {profit >= 0 ? '+' : ''}{profit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                           </span>
-                          <span className={`text-sm font-bold ${profit >= 0 ? 'text-red-500/80' : 'text-emerald-500/80'}`}>
+                          <span className={`text-sm font-bold font-sans ${profit >= 0 ? 'text-red-500/80' : 'text-emerald-500/80'}`}>
                             {profit >= 0 ? '+' : ''}{profitPct.toFixed(2)}%
                           </span>
                         </div>
@@ -199,7 +199,7 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
                         <span className="text-gray-700 font-bold">未持仓</span>
                       )}
                     </td>
-                    <td className="px-6 py-5 text-gray-400 font-mono text-sm">
+                    <td className="px-6 py-5 text-gray-400 font-sans font-bold text-sm">
                       {(parseInt(s.volume) / 100).toFixed(1)}万
                     </td>
                     <td className="px-6 py-5 text-right">

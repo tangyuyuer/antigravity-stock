@@ -6,10 +6,11 @@ import { Watchlist } from '@/components/Watchlist';
 import { StockChart } from '@/components/StockChart';
 import { PositionCalculator } from '@/components/PositionCalculator';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, LayoutDashboard } from 'lucide-react';
+import { X, LayoutDashboard, Calculator } from 'lucide-react';
 
 export default function Home() {
   const [selectedStock, setSelectedStock] = useState<{ code: string; name: string } | null>(null);
+  const [showCalculator, setShowCalculator] = useState(false);
 
   return (
     <main className="min-h-screen p-4 md:p-6 bg-[#0a0b0d] text-gray-200">
@@ -23,6 +24,15 @@ export default function Home() {
             <h1 className="text-2xl font-black tracking-tighter text-white">A股实时监控</h1>
           </div>
           <div className="flex items-center gap-4">
+            {/* Calculator Button */}
+            <button 
+              onClick={() => setShowCalculator(true)}
+              className="flex items-center gap-2 bg-blue-600/10 hover:bg-blue-600/20 px-4 py-2 rounded-xl border border-blue-500/30 text-blue-500 transition-all active:scale-95 group"
+            >
+              <Calculator size={18} className="group-hover:rotate-12 transition-transform" />
+              <span className="text-sm font-bold">仓位计算</span>
+            </button>
+
             <div className="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-full border border-white/5 backdrop-blur-md">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
               <span className="text-[12px] font-bold text-emerald-500 uppercase tracking-widest">Market Live</span>
@@ -33,25 +43,45 @@ export default function Home() {
         {/* Top Indices Dashboard */}
         <IndexHeader />
 
-        {/* New Position Calculator */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <PositionCalculator />
-        </motion.div>
-
         {/* Full Width Watchlist Section */}
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
           className="w-full"
         >
           <Watchlist onSelect={(stock) => setSelectedStock(stock)} />
         </motion.div>
       </div>
+
+      {/* Calculator Modal */}
+      <AnimatePresence>
+        {showCalculator && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowCalculator(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-2xl"
+            >
+               {/* Modal Close Button */}
+               <button 
+                onClick={() => setShowCalculator(false)}
+                className="absolute -top-12 right-0 text-white/50 hover:text-white transition-colors"
+              >
+                <X size={32} />
+              </button>
+              <PositionCalculator />
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Chart Modal (Popup) */}
       <AnimatePresence>

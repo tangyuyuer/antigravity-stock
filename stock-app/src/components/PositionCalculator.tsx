@@ -52,7 +52,7 @@ export const PositionCalculator: React.FC = () => {
             value={totalCapital}
             onChange={(e) => setTotalCapital(e.target.value)}
             placeholder="输入可用资金"
-            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-lg font-mono text-white focus:border-blue-500 outline-none transition-all"
+            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-lg font-sans font-bold text-white focus:border-blue-500 outline-none transition-all"
           />
         </div>
 
@@ -66,7 +66,7 @@ export const PositionCalculator: React.FC = () => {
             value={positionPercent}
             onChange={(e) => setPositionPercent(e.target.value)}
             placeholder="例如 25"
-            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-lg font-mono text-white focus:border-blue-500 outline-none transition-all"
+            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-lg font-sans font-bold text-white focus:border-blue-500 outline-none transition-all"
           />
         </div>
 
@@ -80,7 +80,7 @@ export const PositionCalculator: React.FC = () => {
             value={buyPrice}
             onChange={(e) => setBuyPrice(e.target.value)}
             placeholder="输入股票价格"
-            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-lg font-mono text-white focus:border-blue-500 outline-none transition-all"
+            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-lg font-sans font-bold text-white focus:border-blue-500 outline-none transition-all"
           />
         </div>
       </div>
@@ -90,23 +90,23 @@ export const PositionCalculator: React.FC = () => {
         <div className="flex flex-col items-center justify-center p-4">
           <span className="text-gray-500 text-xs font-bold uppercase mb-1">建议买入</span>
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-black text-blue-500">
+            <span className="text-4xl font-black text-blue-500 font-sans">
               {result ? result.shares.toLocaleString() : '0'}
             </span>
             <span className="text-gray-400 font-bold text-sm">股</span>
           </div>
-          <span className="text-gray-600 text-xs mt-1">({result ? result.hands : 0} 手)</span>
+          <span className="text-gray-600 text-xs mt-1 font-bold">({result ? result.hands : 0} 手)</span>
         </div>
 
         <div className="flex flex-col items-center justify-center p-4 border-l border-white/5">
           <span className="text-gray-500 text-xs font-bold uppercase mb-1">实际成交额</span>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-black text-gray-200">
+            <span className="text-2xl font-black text-gray-200 font-sans">
               {result ? result.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2 }) : '0.00'}
             </span>
             <span className="text-gray-500 font-bold text-sm">元</span>
           </div>
-          <span className="text-gray-600 text-xs mt-1">占总仓位 {(result ? (result.totalCost / parseFloat(totalCapital) * 100).toFixed(2) : 0)}%</span>
+          <span className="text-gray-600 text-xs mt-1 font-bold">占总仓位 {(result ? (result.totalCost / parseFloat(totalCapital) * 100).toFixed(2) : 0)}%</span>
         </div>
       </div>
     </div>
