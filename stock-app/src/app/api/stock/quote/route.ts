@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
       const fields = content.split(',');
       if (fields.length < 10) return null;
 
-      const price = parseFloat(fields[1]);
+      const price = parseFloat(fields[3]);
       const prevClose = parseFloat(fields[2]);
       const change = price - prevClose;
       const pctChange = prevClose !== 0 ? (change / prevClose) * 100 : 0;
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
         price: price.toFixed(2),
         change: change.toFixed(2),
         pct: pctChange.toFixed(2),
-        open: fields[3],
+        open: fields[1],
         high: fields[4],
         low: fields[5],
         volume: fields[8],
