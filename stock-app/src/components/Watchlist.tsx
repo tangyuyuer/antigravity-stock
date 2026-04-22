@@ -223,10 +223,6 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
             </AnimatePresence>
           </tbody>
         </table>
-      </div>
-    </div>
-  );
-};
         {quotes.length === 0 && (
           <div className="p-12 text-center text-gray-500">
             暂无自选股，请在上方输入代码添加
