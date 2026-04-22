@@ -11,11 +11,12 @@ export default function Home() {
     code: 'sh000001',
     name: '上证指数',
   });
+  const [period, setPeriod] = useState<'daily' | 'weekly'>('daily');
 
   return (
-    <main className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">
+    <main className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-8">
       {/* Header section with branding */}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <div>
           <h1 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-emerald-400 tracking-tighter">
             ANTIGRAVITY STOCK
@@ -24,56 +25,66 @@ export default function Home() {
         </div>
         <div className="flex items-center gap-3 glass px-4 py-2 rounded-full border-white/10">
           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-xs font-bold text-emerald-500">LIVE MARKET DATA</span>
+          <span className="text-xs font-bold text-emerald-500 uppercase tracking-wider">Live Market Data</span>
         </div>
       </div>
 
-      {/* Top Indices */}
+      {/* Top Indices Dashboard */}
       <IndexHeader />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left/Top Content: Charts */}
+      {/* Main Analysis Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Chart Viewport (7/12 Width) */}
         <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="lg:col-span-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="lg:col-span-7"
         >
-          <StockChart symbol={selectedStock.code} name={selectedStock.name} />
-          
-          <div className="glass p-6 rounded-2xl">
-            <h3 className="text-lg font-bold mb-4">市场情报</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { label: '上证综指', value: '3,285.67', change: '+0.45%' },
-                { label: '创业板指', value: '2,156.78', change: '-0.12%' },
-                { label: '沪深300', value: '3,985.44', change: '+0.31%' },
-                { label: '成交额', value: '8,865亿', change: '+23%' },
-              ].map((item, i) => (
-                <div key={i} className="flex flex-col">
-                  <span className="text-gray-500 text-xs">{item.label}</span>
-                  <span className="font-bold text-sm mt-1">{item.value}</span>
-                  <span className={`text-[10px] font-bold ${item.change.startsWith('+') ? 'stock-up' : 'stock-down'}`}>
-                    {item.change}
-                  </span>
-                </div>
-              ))}
+          <div className="glass rounded-2xl p-6 shadow-2xl border border-white/5">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-white tracking-tight">{selectedStock.name}</h2>
+                <p className="text-gray-500 font-mono text-xs uppercase tracking-widest">{selectedStock.code}</p>
+              </div>
+              
+              {/* Chart Period Selectors */}
+              <div className="flex bg-black/40 p-1 rounded-xl border border-white/5">
+                <button 
+                  onClick={() => setPeriod('daily')}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${period === 'daily' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
+                >
+                  日线
+                </button>
+                <button 
+                  onClick={() => setPeriod('weekly')}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${period === 'weekly' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
+                >
+                  周线
+                </button>
+              </div>
             </div>
+            
+            {/* The actual chart - Height managed internally */}
+            <StockChart symbol={selectedStock.code} name={selectedStock.name} />
           </div>
         </motion.div>
 
-        {/* Right Content: Watchlist */}
+        {/* Watchlist & Portfolio (5/12 Width) */}
         <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="lg:col-span-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="lg:col-span-5 sticky top-6"
         >
           <Watchlist onSelect={setSelectedStock} />
         </motion.div>
       </div>
 
-      {/* Footer */}
-      <footer className="mt-20 pt-8 border-t border-white/5 text-center text-gray-600 text-xs">
-        <p>© 2026 Antigravity Stock. Data provided by Sina Finance. For demonstration purposes only.</p>
+      {/* Site Footer */}
+      <footer className="pt-12 border-t border-white/5 text-center">
+        <p className="text-gray-600 text-[10px] uppercase tracking-[0.2em]">
+          © 2026 Antigravity Stock • Market Data via Sina Finance • For Testing Only
+        </p>
       </footer>
     </main>
   );

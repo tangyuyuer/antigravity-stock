@@ -8,11 +8,10 @@ interface ChartProps {
   name: string;
 }
 
-export const StockChart: React.FC<ChartProps> = ({ symbol, name }) => {
+export const StockChart: React.FC<ChartProps> = ({ symbol }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
-  const [scale, setScale] = useState<'240' | '1680'>('240'); // 240 is daily, 1680 is weekly (dummy for "Yearly" feel)
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
@@ -27,7 +26,7 @@ export const StockChart: React.FC<ChartProps> = ({ symbol, name }) => {
         horzLines: { color: 'rgba(255, 255, 255, 0.05)' },
       },
       width: chartContainerRef.current.clientWidth,
-      height: 400,
+      height: 300,
       timeScale: {
         borderColor: 'rgba(255, 255, 255, 0.1)',
       },
@@ -46,7 +45,7 @@ export const StockChart: React.FC<ChartProps> = ({ symbol, name }) => {
 
     const fetchKline = async () => {
       try {
-        const res = await fetch(`/api/stock/kline?symbol=${symbol}&scale=${scale}&datalen=500`);
+        const res = await fetch(`/api/stock/kline?symbol=${symbol}&scale=240&datalen=500`);
         const data = await res.json();
         series.setData(data);
         chart.timeScale().fitContent();
@@ -69,31 +68,9 @@ export const StockChart: React.FC<ChartProps> = ({ symbol, name }) => {
       window.removeEventListener('resize', handleResize);
       chart.remove();
     };
-  }, [symbol, scale]);
+  }, [symbol]);
 
   return (
-    <div className="glass p-6 rounded-2xl mb-8 relative">
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h2 className="text-xl font-bold">{name}</h2>
-          <span className="text-gray-500 text-sm uppercase">{symbol}</span>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setScale('240')}
-            className={`px-4 py-1 rounded-full text-sm transition-colors ${scale === '240' ? 'bg-blue-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
-          >
-            日线
-          </button>
-          <button
-             onClick={() => setScale('1680')}
-             className={`px-4 py-1 rounded-full text-sm transition-colors ${scale === '1680' ? 'bg-blue-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
-          >
-            周线
-          </button>
-        </div>
-      </div>
-      <div ref={chartContainerRef} className="w-full h-[400px]" />
-    </div>
+    <div ref={chartContainerRef} className="w-full h-[300px]" />
   );
 };
