@@ -60,6 +60,11 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
     }
   };
 
+  useEffect(() => {
+    const timer = setInterval(fetchQuotes, 5000); // 每 5 秒刷新一次
+    return () => clearInterval(timer);
+  }, [codes]);
+
   const updatePosition = (code: string, field: 'cost' | 'amount', value: string) => {
     setPositions(prev => ({
       ...prev,
@@ -90,54 +95,41 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
   };
 
   return (
-    <div className="glass rounded-2xl overflow-hidden shadow-2xl">
-      <div className="p-4 border-b border-white/5 bg-white/5 flex flex-col gap-4">
-        <div className="flex justify-between items-center">
-          <div className="flex gap-6">
-            <button 
-              onClick={() => setActiveTab('watchlist')}
-              className={`text-sm font-bold pb-2 border-b-2 transition-all ${activeTab === 'watchlist' ? 'border-blue-500 text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
-            >
-              自选股
-            </button>
-            <button className="text-sm font-bold pb-2 border-b-2 border-transparent text-gray-600 cursor-not-allowed">
-              今日涨停 <span className="text-red-500/80 ml-1">(51)</span>
-            </button>
-            <button className="text-sm font-bold pb-2 border-b-2 border-transparent text-gray-600 cursor-not-allowed">
-              今日跌停 <span className="text-emerald-500/80 ml-1">(39)</span>
-            </button>
-          </div>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="代码/名称"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && addStock()}
-              className="bg-black/60 border border-white/10 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-blue-500 transition-all w-32"
-            />
-            <button onClick={addStock} className="bg-blue-600 hover:bg-blue-700 text-white p-1.5 rounded-lg transition-colors">
-              <Plus size={16} />
-            </button>
-          </div>
+    <div className="glass rounded-2xl overflow-hidden shadow-2xl border border-white/5">
+      <div className="p-6 border-b border-white/5 bg-white/2 flex justify-between items-center">
+        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+          <span className="w-1.5 h-6 bg-blue-600 rounded-full" />
+          自选监控
+        </h2>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="输入代码"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && addStock()}
+            className="bg-black/60 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-500 transition-all w-40"
+          />
+          <button onClick={addStock} className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-xl transition-all active:scale-95">
+            <Plus size={20} />
+          </button>
         </div>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-[13px]">
+        <table className="w-full text-left">
           <thead>
-            <tr className="text-gray-500 border-b border-white/5 bg-white/2">
-              <th className="px-4 py-3 font-medium">股票</th>
-              <th className="px-4 py-3 font-medium">最新价</th>
-              <th className="px-4 py-3 font-medium">涨跌幅</th>
-              <th className="px-4 py-3 font-medium">成本价</th>
-              <th className="px-4 py-3 font-medium">持仓量</th>
-              <th className="px-4 py-3 font-medium">盈亏</th>
-              <th className="px-4 py-3 font-medium">成交量</th>
-              <th className="px-4 py-3 font-medium text-right">操作</th>
+            <tr className="text-gray-500 border-b border-white/5 bg-white/[0.02] uppercase tracking-wider text-[11px] font-bold">
+              <th className="px-6 py-4">股票名称</th>
+              <th className="px-6 py-4">当前价格</th>
+              <th className="px-6 py-4">当日涨幅</th>
+              <th className="px-6 py-4">持仓/成本</th>
+              <th className="px-6 py-4">实时盈亏</th>
+              <th className="px-6 py-4">成交额</th>
+              <th className="px-6 py-4 text-right">管理</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-white/[0.02]">
             <AnimatePresence>
               {quotes.map((s) => {
                 const isUp = parseFloat(s.pct) >= 0;
@@ -161,60 +153,64 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={() => onSelect({ code: s.code, name: s.name })}
-                    className="border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer group"
+                    className="hover:bg-white/[0.03] transition-colors cursor-pointer group"
                   >
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-5">
                       <div className="flex flex-col">
-                        <span className={`font-bold ${isUp ? 'text-red-500' : 'text-emerald-500'}`}>{s.name}</span>
-                        <span className="text-[10px] text-gray-500 uppercase">{s.code}</span>
+                        <span className={`text-lg font-black tracking-tight ${isUp ? 'text-red-500' : 'text-emerald-500'}`}>{s.name}</span>
+                        <span className="text-xs text-gray-500 font-mono tracking-widest">{s.code}</span>
                       </div>
                     </td>
-                    <td className={`px-4 py-3 font-mono font-bold ${isUp ? 'stock-up' : 'stock-down'}`}>
+                    <td className={`px-6 py-5 text-xl font-mono font-black ${isUp ? 'stock-up' : 'stock-down'}`}>
                       {s.price}
                     </td>
-                    <td className={`px-4 py-3 font-mono ${isUp ? 'stock-up' : 'stock-down'}`}>
+                    <td className={`px-6 py-5 text-lg font-mono font-bold ${isUp ? 'stock-up' : 'stock-down'}`}>
                       {isUp ? '+' : ''}{s.pct}%
                     </td>
-                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                      <input
-                        type="number"
-                        placeholder="--"
-                        value={pos.cost}
-                        onChange={(e) => updatePosition(s.code, 'cost', e.target.value)}
-                        className="bg-white/5 border border-white/10 rounded w-20 px-2 py-1 text-xs focus:border-blue-500 outline-none transition-all"
-                      />
+                    <td className="px-6 py-5" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex flex-col gap-2">
+                        <input
+                          type="number"
+                          placeholder="成本价"
+                          value={pos.cost}
+                          onChange={(e) => updatePosition(s.code, 'cost', e.target.value)}
+                          className="bg-black/40 border border-white/10 rounded-lg w-28 px-3 py-1.5 text-xs focus:border-blue-500 outline-none transition-all"
+                        />
+                        <input
+                          type="number"
+                          placeholder="持仓量"
+                          value={pos.amount}
+                          onChange={(e) => updatePosition(s.code, 'amount', e.target.value)}
+                          className="bg-black/40 border border-white/10 rounded-lg w-28 px-3 py-1.5 text-xs focus:border-blue-500 outline-none transition-all"
+                        />
+                      </div>
                     </td>
-                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                      <input
-                        type="number"
-                        placeholder="--"
-                        value={pos.amount}
-                        onChange={(e) => updatePosition(s.code, 'amount', e.target.value)}
-                        className="bg-white/5 border border-white/10 rounded w-20 px-2 py-1 text-xs focus:border-blue-500 outline-none transition-all"
-                      />
-                    </td>
-                    <td className={`px-4 py-3 font-mono`}>
+                    <td className={`px-6 py-5`}>
                       {profit !== 0 ? (
                         <div className="flex flex-col">
-                          <span className={profit >= 0 ? 'stock-up' : 'stock-down'}>{profit.toFixed(2)}</span>
-                          <span className={`text-[10px] ${profit >= 0 ? 'stock-up' : 'stock-down'}`}>{profitPct.toFixed(2)}%</span>
+                          <span className={`text-xl font-black ${profit >= 0 ? 'text-red-500' : 'text-emerald-500'}`}>
+                            {profit >= 0 ? '+' : ''}{profit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                          </span>
+                          <span className={`text-sm font-bold ${profit >= 0 ? 'text-red-500/80' : 'text-emerald-500/80'}`}>
+                            {profit >= 0 ? '+' : ''}{profitPct.toFixed(2)}%
+                          </span>
                         </div>
                       ) : (
-                        <span className="text-gray-600">--</span>
+                        <span className="text-gray-700 font-bold">未持仓</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-gray-400 font-mono text-xs">
-                      {(parseInt(s.volume) / 10000).toFixed(1)}万
+                    <td className="px-6 py-5 text-gray-400 font-mono text-sm">
+                      {(parseInt(s.volume) / 100).toFixed(1)}万
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-6 py-5 text-right">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           removeStock(s.code);
                         }}
-                        className="bg-red-500/10 hover:bg-red-500/20 text-red-500 p-1.5 rounded transition-colors"
+                        className="bg-red-500/10 hover:bg-red-500/20 text-red-500 p-2.5 rounded-xl transition-all active:scale-90"
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={18} />
                       </button>
                     </td>
                   </motion.tr>
@@ -224,8 +220,11 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
           </tbody>
         </table>
         {quotes.length === 0 && (
-          <div className="p-12 text-center text-gray-500">
-            暂无自选股，请在上方输入代码添加
+          <div className="p-20 text-center flex flex-col items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-gray-600">
+              <Plus size={32} />
+            </div>
+            <p className="text-gray-500 font-medium">暂无自选监控，请输入代码添加</p>
           </div>
         )}
       </div>

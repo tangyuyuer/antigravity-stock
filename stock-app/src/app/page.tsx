@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { IndexHeader } from '@/components/IndexHeader';
 import { Watchlist } from '@/components/Watchlist';
 import { StockChart } from '@/components/StockChart';
+import { PositionCalculator } from '@/components/PositionCalculator';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, LayoutDashboard } from 'lucide-react';
 
@@ -16,15 +17,15 @@ export default function Home() {
         {/* Header section */}
         <div className="flex justify-between items-center px-2">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-600 p-1.5 rounded-lg">
-              <LayoutDashboard size={20} className="text-white" />
+            <div className="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-600/20">
+              <LayoutDashboard size={22} className="text-white" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight text-white">A股实时监控</h1>
+            <h1 className="text-2xl font-black tracking-tighter text-white">A股实时监控</h1>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full border border-white/5">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[11px] font-medium text-emerald-500 uppercase tracking-wider">Market Live</span>
+            <div className="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-full border border-white/5 backdrop-blur-md">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+              <span className="text-[12px] font-bold text-emerald-500 uppercase tracking-widest">Market Live</span>
             </div>
           </div>
         </div>
@@ -32,10 +33,20 @@ export default function Home() {
         {/* Top Indices Dashboard */}
         <IndexHeader />
 
+        {/* New Position Calculator */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <PositionCalculator />
+        </motion.div>
+
         {/* Full Width Watchlist Section */}
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
           className="w-full"
         >
           <Watchlist onSelect={(stock) => setSelectedStock(stock)} />
