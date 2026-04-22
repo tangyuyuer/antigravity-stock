@@ -27,7 +27,7 @@ async function fetchMarketData() {
       const match = line.match(/hq_str_(.+?)="(.+?)"/);
       if (!match) return null;
       const fields = match[2].split(',');
-      const price = parseFloat(fields[1]);
+      const price = parseFloat(fields[3]);
       const prevClose = parseFloat(fields[2]);
       const change = price - prevClose;
       const pct = prevClose !== 0 ? (change / prevClose * 100) : 0;
