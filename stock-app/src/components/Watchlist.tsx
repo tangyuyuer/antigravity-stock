@@ -60,6 +60,28 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
     fetchAnnouncements();
   }, [codes, positions]);
 
+  const fetchQuotes = async () => {
+    if (codes.length === 0) {
+      setQuotes([]);
+      return;
+    }
+    try {
+      const res = await fetch(`/api/stock/quote?codes=${codes.join(',')}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (Array.isArray(json)) {
+          setQuotes(json);
+        } else {
+          console.error('API returned non-array data:', json);
+        }
+      } else {
+        console.error('API Error:', res.status, res.statusText);
+      }
+    } catch (e) {
+      console.error('Failed to fetch quotes', e);
+    }
+  };
+
   const fetchAnnouncements = async () => {
     if (codes.length === 0) return;
     
@@ -331,6 +353,7 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 };
