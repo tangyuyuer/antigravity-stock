@@ -20,6 +20,13 @@ interface Position {
   amount: string;
 }
 
+interface StockAnnouncement {
+  id: string;
+  title: string;
+  date: string;
+  url: string;
+}
+
 interface WatchlistProps {
   onSelect: (stock: { code: string; name: string }) => void;
 }
@@ -28,50 +35,68 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
   const [codes, setCodes] = useState<string[]>([]);
   const [positions, setPositions] = useState<Record<string, Position>>({});
   const [quotes, setQuotes] = useState<StockQuote[]>([]);
+  const [announcements, setAnnouncements] = useState<Record<string, StockAnnouncement>>({});
+  const [readAnnouncements, setReadAnnouncements] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [activeTab, setActiveTab] = useState('watchlist');
 
   useEffect(() => {
     const savedCodes = localStorage.getItem('watchlist');
     const savedPositions = localStorage.getItem('positions');
+    const savedReadAnn = localStorage.getItem('read_announcements');
+    
     if (savedCodes) setCodes(JSON.parse(savedCodes));
     else setCodes(['sh600000', 'sz000001']);
     
     if (savedPositions) setPositions(JSON.parse(savedPositions));
+    if (savedReadAnn) setReadAnnouncements(JSON.parse(savedReadAnn));
   }, []);
 
   useEffect(() => {
     localStorage.setItem('watchlist', JSON.stringify(codes));
     localStorage.setItem('positions', JSON.stringify(positions));
+    localStorage.setItem('read_announcements', JSON.stringify(readAnnouncements));
     fetchQuotes();
+    fetchAnnouncements();
   }, [codes, positions]);
 
-  const fetchQuotes = async () => {
-    if (codes.length === 0) {
-      setQuotes([]);
-      return;
-    }
-    try {
-      const res = await fetch(`/api/stock/quote?codes=${codes.join(',')}`);
-      if (res.ok) {
-        const json = await res.json();
-        if (Array.isArray(json)) {
-          setQuotes(json);
-        } else {
-          console.error('API returned non-array data:', json);
+  const fetchAnnouncements = async () => {
+    if (codes.length === 0) return;
+    
+    // Fetch announcements for each code
+    // To avoid too many requests, we could do them in parallel or sequence
+    // Here we fetch one by one but they are cached on the server
+    for (const code of codes) {
+      try {
+        const res = await fetch(`/api/stock/announcements?code=${code}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data) {
+            setAnnouncements(prev => ({ ...prev, [code]: data }));
+          }
         }
-      } else {
-        console.error('API Error:', res.status, res.statusText);
+      } catch (e) {
+        console.error(`Failed to fetch announcements for ${code}`, e);
       }
-    } catch (e) {
-      console.error('Failed to fetch quotes', e);
     }
   };
 
   useEffect(() => {
-    const timer = setInterval(fetchQuotes, 5000); // 每 5 秒刷新一次
+    const timer = setInterval(fetchQuotes, 5000); 
     return () => clearInterval(timer);
   }, [codes]);
+
+  // Fetch announcements less frequently (every 30 mins)
+  useEffect(() => {
+    const timer = setInterval(fetchAnnouncements, 1000 * 60 * 30);
+    return () => clearInterval(timer);
+  }, [codes]);
+
+  const markAnnAsRead = (annId: string) => {
+    if (!readAnnouncements.includes(annId)) {
+      setReadAnnouncements([...readAnnouncements, annId]);
+    }
+  };
 
   const updatePosition = (code: string, field: 'cost' | 'amount', value: string) => {
     setPositions(prev => ({
@@ -102,8 +127,62 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
     setPositions(newPositions);
   };
 
+  const totalProfit = quotes.reduce((acc, s) => {
+    const pos = positions[s.code];
+    if (pos && pos.cost && pos.amount) {
+      return acc + (parseFloat(s.price) - parseFloat(pos.cost)) * parseFloat(pos.amount);
+    }
+    return acc;
+  }, 0);
+
+  const totalCost = quotes.reduce((acc, s) => {
+    const pos = positions[s.code];
+    if (pos && pos.cost && pos.amount) {
+      return acc + parseFloat(pos.cost) * parseFloat(pos.amount);
+    }
+    return acc;
+  }, 0);
+
+  const totalProfitPct = totalCost > 0 ? (totalProfit / totalCost) * 100 : 0;
+
   return (
-    <div className="glass rounded-2xl overflow-hidden shadow-2xl border border-white/5">
+    <div className="space-y-6">
+      {/* Total Performance Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="glass p-6 rounded-2xl border border-white/5 bg-gradient-to-br from-blue-600/10 to-transparent">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-gray-400 text-[11px] font-bold uppercase tracking-widest">持仓实时总盈亏 (元)</span>
+            <div className={`p-1.5 rounded-lg ${totalProfit >= 0 ? 'bg-red-500/10' : 'bg-emerald-500/10'}`}>
+               {totalProfit >= 0 ? <TrendingUp size={16} className="text-red-500" /> : <TrendingDown size={16} className="text-emerald-500" />}
+            </div>
+          </div>
+          <div className="flex items-baseline gap-3">
+            <span className={`text-4xl font-black font-sans ${totalProfit >= 0 ? 'text-red-500' : 'text-emerald-500'}`}>
+              {totalProfit >= 0 ? '+' : ''}{totalProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            </span>
+            <span className={`text-lg font-bold font-sans ${totalProfit >= 0 ? 'text-red-500/60' : 'text-emerald-500/60'}`}>
+              {totalProfit >= 0 ? '+' : ''}{totalProfitPct.toFixed(2)}%
+            </span>
+          </div>
+        </div>
+        
+        <div className="glass p-6 rounded-2xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent flex items-center justify-between">
+           <div>
+             <span className="text-gray-500 text-[11px] font-bold uppercase tracking-widest block mb-1">今日市场监控</span>
+             <div className="text-xl font-bold text-gray-200">
+               {quotes.length} <span className="text-sm text-gray-500">只监控标的</span>
+             </div>
+           </div>
+           <div className="text-right">
+             <span className="text-gray-500 text-[11px] font-bold uppercase tracking-widest block mb-1">监控总市值</span>
+             <div className="text-xl font-bold text-white font-sans">
+               {quotes.reduce((acc, s) => acc + parseFloat(s.price) * (parseFloat(positions[s.code]?.amount) || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+             </div>
+           </div>
+        </div>
+      </div>
+
+      <div className="glass rounded-2xl overflow-hidden shadow-2xl border border-white/5">
       <div className="p-6 border-b border-white/5 bg-white/2 flex justify-between items-center">
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
           <span className="w-1.5 h-6 bg-blue-600 rounded-full" />
@@ -133,7 +212,7 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
               <th className="px-6 py-4">当日涨幅</th>
               <th className="px-6 py-4">持仓/成本</th>
               <th className="px-6 py-4">实时盈亏</th>
-              <th className="px-6 py-4">成交额</th>
+              <th className="px-6 py-4">最新公告</th>
               <th className="px-6 py-4 text-right">管理</th>
             </tr>
           </thead>
@@ -207,8 +286,24 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
                         <span className="text-gray-700 font-bold">未持仓</span>
                       )}
                     </td>
-                    <td className="px-6 py-5 text-gray-400 font-sans font-bold text-sm">
-                      {(parseInt(s.volume) / 100).toFixed(1)}万
+                    <td className="px-6 py-5">
+                       {announcements[s.code] ? (
+                         <a 
+                           href={announcements[s.code].url} 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           onClick={(e) => {
+                             e.stopPropagation();
+                             markAnnAsRead(announcements[s.code].id);
+                           }}
+                           className={`text-xs max-w-[200px] block truncate transition-colors ${readAnnouncements.includes(announcements[s.code].id) ? 'text-gray-600' : 'text-blue-400 hover:text-blue-300'}`}
+                           title={announcements[s.code].title}
+                         >
+                           {announcements[s.code].title}
+                         </a>
+                       ) : (
+                         <span className="text-[10px] text-gray-700 font-bold uppercase">无公告</span>
+                       )}
                     </td>
                     <td className="px-6 py-5 text-right">
                       <button

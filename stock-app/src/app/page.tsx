@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { IndexHeader } from '@/components/IndexHeader';
+import { MarketSentiment } from '@/components/MarketSentiment';
 import { Watchlist } from '@/components/Watchlist';
 import { StockChart } from '@/components/StockChart';
 import { PositionCalculator } from '@/components/PositionCalculator';
@@ -42,6 +43,9 @@ export default function Home() {
 
         {/* Top Indices Dashboard */}
         <IndexHeader />
+
+        {/* Market Sentiment (Thermometer) */}
+        <MarketSentiment />
 
         {/* Full Width Watchlist Section */}
         <motion.div 
