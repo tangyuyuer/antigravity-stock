@@ -53,8 +53,16 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
     }
     try {
       const res = await fetch(`/api/stock/quote?codes=${codes.join(',')}`);
-      const json = await res.json();
-      setQuotes(json);
+      if (res.ok) {
+        const json = await res.json();
+        if (Array.isArray(json)) {
+          setQuotes(json);
+        } else {
+          console.error('API returned non-array data:', json);
+        }
+      } else {
+        console.error('API Error:', res.status, res.statusText);
+      }
     } catch (e) {
       console.error('Failed to fetch quotes', e);
     }
