@@ -45,8 +45,15 @@ export async function GET(request: NextRequest) {
       const fields = content.split(',');
       if (fields.length < 10) return null;
 
-      const price = parseFloat(fields[3]);
+      const open = parseFloat(fields[1]);
       const prevClose = parseFloat(fields[2]);
+      let price = parseFloat(fields[3]);
+
+      // Handle call auction or pre-market where current price (fields[3]) is 0
+      if (price === 0) {
+        price = open > 0 ? open : prevClose;
+      }
+
       const change = price - prevClose;
       const pctChange = prevClose !== 0 ? (change / prevClose) * 100 : 0;
 
