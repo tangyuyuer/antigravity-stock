@@ -53,7 +53,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           className="w-full"
         >
-          <Watchlist onSelect={(stock) => setSelectedStock(stock)} />
+          <Watchlist onSelect={(stock: { code: string; name: string }) => setSelectedStock(stock)} />
         </motion.div>
       </div>
 

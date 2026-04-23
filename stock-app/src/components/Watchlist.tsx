@@ -1,11 +1,36 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, TrendingUp, TrendingDown, GripVertical } from 'lucide-react';
 import { Reorder } from 'framer-motion';
 
-// ... (keep interfaces as they are)
+interface StockQuote {
+  code: string;
+  name: string;
+  price: string;
+  change: string;
+  pct: string;
+  volume: string;
+  turnover?: string;
+}
+
+interface Position {
+  code: string;
+  cost: string;
+  amount: string;
+}
+
+interface StockAnnouncement {
+  id: string;
+  title: string;
+  date: string;
+  url: string;
+}
+
+interface WatchlistProps {
+  onSelect: (stock: { code: string; name: string }) => void;
+}
+
 
 export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
   const [codes, setCodes] = useState<string[]>([]);
@@ -14,7 +39,6 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
   const [announcements, setAnnouncements] = useState<Record<string, StockAnnouncement>>({});
   const [readAnnouncements, setReadAnnouncements] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState('');
-  const [activeTab, setActiveTab] = useState('watchlist');
 
   useEffect(() => {
     const savedCodes = localStorage.getItem('watchlist');
@@ -56,7 +80,86 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
     }
   };
 
-  // ... (keep other fetch functions as they are)
+  const fetchAnnouncements = async () => {
+    if (codes.length === 0) return;
+    for (const code of codes) {
+      try {
+        const res = await fetch(`/api/stock/announcements?code=${code}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data) {
+            setAnnouncements(prev => ({ ...prev, [code]: data }));
+          }
+        }
+      } catch (e) {
+        console.error(`Failed to fetch announcements for ${code}`, e);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const timer = setInterval(fetchQuotes, 5000); 
+    return () => clearInterval(timer);
+  }, [codes]);
+
+  useEffect(() => {
+    const timer = setInterval(fetchAnnouncements, 1000 * 60 * 30);
+    return () => clearInterval(timer);
+  }, [codes]);
+
+  const markAnnAsRead = (annId: string) => {
+    if (!readAnnouncements.includes(annId)) {
+      setReadAnnouncements([...readAnnouncements, annId]);
+    }
+  };
+
+  const updatePosition = (code: string, field: 'cost' | 'amount', value: string) => {
+    setPositions(prev => ({
+      ...prev,
+      [code]: {
+        ...(prev[code] || { code, cost: '', amount: '' }),
+        [field]: value
+      }
+    }));
+  };
+
+  const addStock = () => {
+    if (!inputValue) return;
+    let code = inputValue.toLowerCase();
+    if (!code.startsWith('sh') && !code.startsWith('sz')) {
+      code = (code.startsWith('6') ? 'sh' : 'sz') + code;
+    }
+    if (!codes.includes(code)) {
+      setCodes([...codes, code]);
+    }
+    setInputValue('');
+  };
+
+  const removeStock = (code: string) => {
+    setCodes(codes.filter(c => c !== code));
+    const newPositions = { ...positions };
+    delete newPositions[code];
+    setPositions(newPositions);
+  };
+
+  const totalProfit = quotes.reduce((acc, s) => {
+    const pos = positions[s.code];
+    if (pos && pos.cost && pos.amount) {
+      return acc + (parseFloat(s.price) - parseFloat(pos.cost)) * parseFloat(pos.amount);
+    }
+    return acc;
+  }, 0);
+
+  const totalCost = quotes.reduce((acc, s) => {
+    const pos = positions[s.code];
+    if (pos && pos.cost && pos.amount) {
+      return acc + parseFloat(pos.cost) * parseFloat(pos.amount);
+    }
+    return acc;
+  }, 0);
+
+  const totalProfitPct = totalCost > 0 ? (totalProfit / totalCost) * 100 : 0;
+
 
   const handleReorder = (newCodes: string[]) => {
     setCodes(newCodes);

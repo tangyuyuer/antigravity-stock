@@ -78,8 +78,9 @@ export async function GET(request: NextRequest) {
     cache[cacheKey] = { data: result, timestamp: Date.now() };
 
     return NextResponse.json(result);
-  } catch (error: any) {
-    console.error('API Error:', error.message);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('API Error:', errorMessage);
     return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
   }
 }
