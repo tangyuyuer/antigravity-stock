@@ -7,6 +7,8 @@ const INDICES = [
   { name: '上证指数', code: 'sh000001' },
   { name: '深证成指', code: 'sz399001' },
   { name: '创业板指', code: 'sz399006' },
+  { name: '大市值', code: 'sh000300' },
+  { name: '小市值', code: 'sh000852' },
 ];
 
 async function fetchMarketData() {

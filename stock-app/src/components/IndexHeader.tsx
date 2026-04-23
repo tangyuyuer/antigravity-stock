@@ -17,11 +17,10 @@ export const IndexHeader: React.FC = () => {
 
   const fetchIndices = async () => {
     try {
-      // Fetch real-time data from our API instead of the static JSON
-      const res = await fetch(`/api/stock/quote?codes=sh000001,sz399001,sz399006&t=${Date.now()}`);
+      // Fetch real-time data from our API
+      const res = await fetch(`/api/stock/quote?codes=sh000001,sz399001,sz399006,sh000300,sh000852&t=${Date.now()}`);
       if (res.ok) {
         const json = await res.json();
-        // The API returns an array of objects
         setData(json);
       }
     } catch (e) {
@@ -35,8 +34,14 @@ export const IndexHeader: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const getDisplayName = (code: string, originalName: string) => {
+    if (code === 'sh000300') return '大市值';
+    if (code === 'sh000852') return '小市值';
+    return originalName;
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
       {data.map((idx) => {
         const isUp = parseFloat(idx.pct) >= 0;
         return (
@@ -46,13 +51,15 @@ export const IndexHeader: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="glass p-3 rounded-2xl flex flex-col items-center justify-center transition-all hover:border-white/10"
           >
-            <span className="text-gray-400 text-xs font-medium mb-0.5">{idx.name}</span>
+            <span className="text-gray-400 text-xs font-medium mb-0.5">
+              {getDisplayName(idx.code, idx.name)}
+            </span>
             <span className={`text-2xl font-bold mb-1 ${isUp ? 'stock-up' : 'stock-down'}`}>
               {idx.price}
             </span>
             <div className={`flex gap-2 text-sm font-semibold ${isUp ? 'stock-up' : 'stock-down'}`}>
-              <span>{idx.change}</span>
-              <span>{idx.pct}%</span>
+              <span>{isUp ? '+' : ''}{idx.change}</span>
+              <span>{isUp ? '+' : ''}{idx.pct}%</span>
             </div>
           </motion.div>
         );
