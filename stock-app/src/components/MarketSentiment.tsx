@@ -17,7 +17,7 @@ export const MarketSentiment: React.FC = () => {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch('/api/market/stats');
+      const res = await fetch(`/api/market/stats?t=${Date.now()}`);
       if (res.ok) {
         const data = await res.json();
         setStats(data);

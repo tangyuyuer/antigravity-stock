@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import iconv from 'iconv-lite';
 
+export const dynamic = 'force-dynamic';
+
 // Cache for historical data
 const cache: Record<string, { data: any, timestamp: number }> = {};
 const CACHE_TTL = 10000; // 10 seconds

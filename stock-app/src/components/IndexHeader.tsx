@@ -18,7 +18,7 @@ export const IndexHeader: React.FC = () => {
   const fetchIndices = async () => {
     try {
       // Fetch real-time data from our API instead of the static JSON
-      const res = await fetch('/api/stock/quote?codes=sh000001,sz399001,sz399006');
+      const res = await fetch(`/api/stock/quote?codes=sh000001,sz399001,sz399006&t=${Date.now()}`);
       if (res.ok) {
         const json = await res.json();
         // The API returns an array of objects

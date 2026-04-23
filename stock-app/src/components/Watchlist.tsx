@@ -66,7 +66,7 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
       return;
     }
     try {
-      const res = await fetch(`/api/stock/quote?codes=${codes.join(',')}`);
+      const res = await fetch(`/api/stock/quote?codes=${codes.join(',')}&t=${Date.now()}`);
       if (res.ok) {
         const json = await res.json();
         if (Array.isArray(json)) {

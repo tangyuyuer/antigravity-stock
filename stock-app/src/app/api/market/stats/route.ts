@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
+export const dynamic = 'force-dynamic';
+
 const cache: { data: any; timestamp: number } = { data: null, timestamp: 0 };
 const CACHE_TTL = 60000; // 1 minute
 

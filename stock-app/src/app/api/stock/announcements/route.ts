@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 
+export const dynamic = 'force-dynamic';
+
 // Cache for announcements to avoid frequent hits
 const cache: Record<string, { data: any; timestamp: number }> = {};
 const CACHE_TTL = 3600000 * 2; // 2 hours
