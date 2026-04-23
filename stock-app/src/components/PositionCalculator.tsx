@@ -7,7 +7,34 @@ export const PositionCalculator: React.FC = () => {
   const [totalCapital, setTotalCapital] = useState<string>('100000');
   const [positionPercent, setPositionPercent] = useState<string>('25');
   const [buyPrice, setBuyPrice] = useState<string>('');
-  const [result, setResult] = useState<{ shares: number; hands: number; totalCost: number } | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [result, setResult] = useState<{ 
+    shares: number; 
+    hands: number; 
+    totalCost: number;
+    isCeil: boolean;
+    otherShares: number;
+    otherHands: number;
+    otherCost: number;
+    otherPct: number;
+  } | null>(null);
+
+  // Load from localStorage
+  useEffect(() => {
+    const savedTotal = localStorage.getItem('calc_total_capital');
+    const savedPercent = localStorage.getItem('calc_position_percent');
+    if (savedTotal) setTotalCapital(savedTotal);
+    if (savedPercent) setPositionPercent(savedPercent);
+    setIsLoaded(true);
+  }, []);
+
+  // Save to localStorage - only after initial load to avoid overwriting with defaults
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem('calc_total_capital', totalCapital);
+      localStorage.setItem('calc_position_percent', positionPercent);
+    }
+  }, [totalCapital, positionPercent, isLoaded]);
 
   useEffect(() => {
     const total = parseFloat(totalCapital);
@@ -17,15 +44,34 @@ export const PositionCalculator: React.FC = () => {
     if (total > 0 && percent > 0 && price > 0) {
       const budget = total * (percent / 100);
       const exactShares = budget / price;
-      // A-shares must be multiples of 100 (1 hand)
-      const hands = Math.floor(exactShares / 100);
-      const finalShares = hands * 100;
-      const finalCost = finalShares * price;
+      
+      const handsFloor = Math.floor(exactShares / 100);
+      const handsCeil = Math.ceil(exactShares / 100);
+      
+      const sharesFloor = handsFloor * 100;
+      const sharesCeil = handsCeil * 100;
+      
+      const costFloor = sharesFloor * price;
+      const costCeil = sharesCeil * price;
+      
+      const pctFloor = (costFloor / total) * 100;
+      const pctCeil = (costCeil / total) * 100;
+      
+      const diffFloor = Math.abs(pctFloor - percent);
+      const diffCeil = Math.abs(pctCeil - percent);
+      
+      // Determine which is closer to target percent
+      const isCeilBetter = handsFloor === 0 ? true : diffCeil < diffFloor;
 
       setResult({
-        shares: finalShares,
-        hands: hands,
-        totalCost: finalCost
+        shares: isCeilBetter ? sharesCeil : sharesFloor,
+        hands: isCeilBetter ? handsCeil : handsFloor,
+        totalCost: isCeilBetter ? costCeil : costFloor,
+        isCeil: isCeilBetter,
+        otherShares: isCeilBetter ? sharesFloor : sharesCeil,
+        otherHands: isCeilBetter ? handsFloor : handsCeil,
+        otherCost: isCeilBetter ? costFloor : costCeil,
+        otherPct: isCeilBetter ? pctFloor : pctCeil
       });
     } else {
       setResult(null);
@@ -86,28 +132,62 @@ export const PositionCalculator: React.FC = () => {
       </div>
 
       {/* Result Display */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-white/2 rounded-2xl border border-white/5">
-        <div className="flex flex-col items-center justify-center p-4">
-          <span className="text-gray-500 text-xs font-bold uppercase mb-1">建议买入</span>
-          <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-black text-blue-500 font-sans">
-              {result ? result.shares.toLocaleString() : '0'}
-            </span>
-            <span className="text-gray-400 font-bold text-sm">股</span>
+      <div className="mt-8 flex flex-col gap-4">
+        {/* Recommended Result */}
+        <div className="p-6 bg-blue-600/10 rounded-2xl border border-blue-500/20 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl uppercase tracking-widest shadow-lg">
+            推荐方案 (最接近预设)
           </div>
-          <span className="text-gray-600 text-xs mt-1 font-bold">({result ? result.hands : 0} 手)</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col items-center md:items-start justify-center">
+              <span className="text-blue-400 text-xs font-bold uppercase mb-1 tracking-wider">建议买入股数</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-5xl font-black text-white font-sans drop-shadow-sm">
+                  {result ? result.shares.toLocaleString() : '0'}
+                </span>
+                <span className="text-gray-400 font-bold text-sm">股</span>
+              </div>
+              <span className="text-blue-500/60 text-sm mt-1 font-bold">
+                ({result ? result.hands : 0} 手) {result?.isCeil ? '• 向上取整' : '• 向下取整'}
+              </span>
+            </div>
+
+            <div className="flex flex-col items-center md:items-end justify-center md:border-l border-white/5">
+              <span className="text-gray-500 text-xs font-bold uppercase mb-1 tracking-wider">预计成交额 / 实际仓位</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-black text-gray-200 font-sans">
+                  {result ? result.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2 }) : '0.00'}
+                </span>
+                <span className="text-gray-500 font-bold text-sm">元</span>
+              </div>
+              <div className="flex items-center gap-2 mt-1">
+                <div className="h-1.5 w-24 bg-white/5 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-blue-500 transition-all duration-500" 
+                    style={{ width: `${result ? (result.totalCost / parseFloat(totalCapital) * 100) : 0}%` }}
+                  />
+                </div>
+                <span className="text-blue-500 font-black text-sm">
+                  {(result ? (result.totalCost / parseFloat(totalCapital) * 100).toFixed(2) : 0)}%
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-col items-center justify-center p-4 border-l border-white/5">
-          <span className="text-gray-500 text-xs font-bold uppercase mb-1">实际成交额</span>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-black text-gray-200 font-sans">
-              {result ? result.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2 }) : '0.00'}
-            </span>
-            <span className="text-gray-500 font-bold text-sm">元</span>
+        {/* Alternative Result */}
+        {result && result.otherShares > 0 && result.otherShares !== result.shares && (
+          <div className="p-4 bg-white/[0.02] rounded-xl border border-white/5 flex justify-between items-center opacity-60 hover:opacity-100 transition-all">
+            <div className="flex flex-col">
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">备选方案 ({result.isCeil ? '少买' : '多买'})</span>
+              <span className="text-lg font-bold text-gray-300">{result.otherShares.toLocaleString()} 股 ({result.otherHands} 手)</span>
+            </div>
+            <div className="text-right">
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">实际仓位</span>
+              <div className="text-lg font-bold text-gray-400">{result.otherPct.toFixed(2)}%</div>
+            </div>
           </div>
-          <span className="text-gray-600 text-xs mt-1 font-bold">占总仓位 {(result ? (result.totalCost / parseFloat(totalCapital) * 100).toFixed(2) : 0)}%</span>
-        </div>
+        )}
       </div>
     </div>
   );
