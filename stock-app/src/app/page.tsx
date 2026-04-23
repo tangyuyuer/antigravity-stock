@@ -14,29 +14,29 @@ export default function Home() {
   const [showCalculator, setShowCalculator] = useState(false);
 
   return (
-    <main className="min-h-screen p-4 md:p-6 bg-[#0a0b0d] text-gray-200">
-      <div className="max-w-[1600px] mx-auto space-y-6">
+    <main className="min-h-screen p-3 md:p-4 bg-[#0a0b0d] text-gray-200">
+      <div className="max-w-[1600px] mx-auto space-y-4">
         {/* Header section */}
         <div className="flex justify-between items-center px-2">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-600/20">
-              <LayoutDashboard size={22} className="text-white" />
+            <div className="bg-blue-600 p-1.5 rounded-xl shadow-lg shadow-blue-600/20">
+              <LayoutDashboard size={20} className="text-white" />
             </div>
-            <h1 className="text-2xl font-black tracking-tighter text-white">A股实时监控</h1>
+            <h1 className="text-xl font-black tracking-tighter text-white">A股实时监控</h1>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {/* Calculator Button */}
             <button 
               onClick={() => setShowCalculator(true)}
-              className="flex items-center gap-2 bg-blue-600/10 hover:bg-blue-600/20 px-4 py-2 rounded-xl border border-blue-500/30 text-blue-500 transition-all active:scale-95 group"
+              className="flex items-center gap-2 bg-blue-600/10 hover:bg-blue-600/20 px-3 py-1.5 rounded-xl border border-blue-500/30 text-blue-500 transition-all active:scale-95 group"
             >
-              <Calculator size={18} className="group-hover:rotate-12 transition-transform" />
-              <span className="text-sm font-bold">仓位计算</span>
+              <Calculator size={16} className="group-hover:rotate-12 transition-transform" />
+              <span className="text-xs font-bold">仓位计算</span>
             </button>
 
-            <div className="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-full border border-white/5 backdrop-blur-md">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
-              <span className="text-[12px] font-bold text-emerald-500 uppercase tracking-widest">Market Live</span>
+            <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full border border-white/5 backdrop-blur-md">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+              <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Live</span>
             </div>
           </div>
         </div>

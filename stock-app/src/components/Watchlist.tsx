@@ -168,36 +168,36 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
   const totalProfitPct = totalCost > 0 ? (totalProfit / totalCost) * 100 : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Total Performance Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="glass p-6 rounded-2xl border border-white/5 bg-gradient-to-br from-blue-600/10 to-transparent">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-gray-400 text-[11px] font-bold uppercase tracking-widest">持仓实时总盈亏 (元)</span>
-            <div className={`p-1.5 rounded-lg ${totalProfit >= 0 ? 'bg-red-500/10' : 'bg-emerald-500/10'}`}>
-               {totalProfit >= 0 ? <TrendingUp size={16} className="text-red-500" /> : <TrendingDown size={16} className="text-emerald-500" />}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="glass p-4 rounded-2xl border border-white/5 bg-gradient-to-br from-blue-600/10 to-transparent">
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">持仓实时总盈亏 (元)</span>
+            <div className={`p-1 rounded-lg ${totalProfit >= 0 ? 'bg-red-500/10' : 'bg-emerald-500/10'}`}>
+               {totalProfit >= 0 ? <TrendingUp size={14} className="text-red-500" /> : <TrendingDown size={14} className="text-emerald-500" />}
             </div>
           </div>
-          <div className="flex items-baseline gap-3">
-            <span className={`text-4xl font-black font-sans ${totalProfit >= 0 ? 'text-red-500' : 'text-emerald-500'}`}>
+          <div className="flex items-baseline gap-2">
+            <span className={`text-3xl font-black font-sans ${totalProfit >= 0 ? 'text-red-500' : 'text-emerald-500'}`}>
               {totalProfit >= 0 ? '+' : ''}{totalProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </span>
-            <span className={`text-lg font-bold font-sans ${totalProfit >= 0 ? 'text-red-500/60' : 'text-emerald-500/60'}`}>
+            <span className={`text-sm font-bold font-sans ${totalProfit >= 0 ? 'text-red-500/60' : 'text-emerald-500/60'}`}>
               {totalProfit >= 0 ? '+' : ''}{totalProfitPct.toFixed(2)}%
             </span>
           </div>
         </div>
         
-        <div className="glass p-6 rounded-2xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent flex items-center justify-between">
+        <div className="glass p-4 rounded-2xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent flex items-center justify-between">
            <div>
-             <span className="text-gray-500 text-[11px] font-bold uppercase tracking-widest block mb-1">自选监控统计</span>
-             <div className="text-xl font-bold text-gray-200">
-               {quotes.length} <span className="text-sm text-gray-500">只监控标的</span>
+             <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest block mb-0.5">自选监控统计</span>
+             <div className="text-lg font-bold text-gray-200">
+               {quotes.length} <span className="text-xs text-gray-500 font-normal">只监控标的</span>
              </div>
            </div>
            <div className="text-right">
-             <span className="text-gray-500 text-[11px] font-bold uppercase tracking-widest block mb-1">监控总市值</span>
-             <div className="text-xl font-bold text-white font-sans">
+             <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest block mb-0.5">监控总市值</span>
+             <div className="text-lg font-bold text-white font-sans">
                {quotes.reduce((acc, s) => acc + parseFloat(s.price) * (parseFloat(positions[s.code]?.amount) || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
              </div>
            </div>
@@ -205,7 +205,7 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
       </div>
 
       <div className="glass rounded-2xl overflow-hidden shadow-2xl border border-white/5">
-      <div className="p-6 border-b border-white/5 bg-white/2 flex justify-between items-center">
+      <div className="px-5 py-3 border-b border-white/5 bg-white/2 flex justify-between items-center">
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
           <span className="w-1.5 h-6 bg-blue-600 rounded-full" />
           自选监控
@@ -228,14 +228,14 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
       <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
-            <tr className="text-gray-500 border-b border-white/5 bg-white/[0.02] uppercase tracking-wider text-[11px] font-bold">
-              <th className="px-6 py-4">股票名称</th>
-              <th className="px-6 py-4">当前价格</th>
-              <th className="px-6 py-4">当日涨幅</th>
-              <th className="px-6 py-4">持仓/成本</th>
-              <th className="px-6 py-4">实时盈亏</th>
-              <th className="px-6 py-4">最新公告</th>
-              <th className="px-6 py-4 text-right">管理</th>
+            <tr className="text-gray-500 border-b border-white/5 bg-white/[0.02] uppercase tracking-wider text-[10px] font-bold">
+              <th className="px-5 py-3">股票名称</th>
+              <th className="px-5 py-3">当前价格</th>
+              <th className="px-5 py-3">当日涨幅</th>
+              <th className="px-5 py-3">持仓/成本</th>
+              <th className="px-5 py-3">实时盈亏</th>
+              <th className="px-5 py-3">最新公告</th>
+              <th className="px-5 py-3 text-right">管理</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/[0.02]">
@@ -264,51 +264,51 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
                     onClick={() => onSelect({ code: s.code, name: s.name })}
                     className="hover:bg-white/[0.03] transition-colors cursor-pointer group"
                   >
-                    <td className="px-6 py-5">
+                    <td className="px-5 py-2">
                       <div className="flex flex-col">
-                        <span className={`text-lg font-black tracking-tight ${isUp ? 'text-red-500' : 'text-emerald-500'}`}>{s.name}</span>
-                        <span className="text-xs text-gray-500 font-sans tracking-tight uppercase">{s.code}</span>
+                        <span className={`text-base font-black tracking-tight ${isUp ? 'text-red-500' : 'text-emerald-500'}`}>{s.name}</span>
+                        <span className="text-[10px] text-gray-500 font-sans tracking-tight uppercase">{s.code}</span>
                       </div>
                     </td>
-                    <td className={`px-6 py-5 text-xl font-sans font-black ${isUp ? 'stock-up' : 'stock-down'}`}>
+                    <td className={`px-5 py-2 text-lg font-sans font-black ${isUp ? 'stock-up' : 'stock-down'}`}>
                       {s.price}
                     </td>
-                    <td className={`px-6 py-5 text-lg font-sans font-bold ${isUp ? 'stock-up' : 'stock-down'}`}>
+                    <td className={`px-5 py-2 text-base font-sans font-bold ${isUp ? 'stock-up' : 'stock-down'}`}>
                       {isUp ? '+' : ''}{s.pct}%
                     </td>
-                    <td className="px-6 py-5" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex flex-col gap-2">
+                    <td className="px-5 py-2" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex flex-col gap-1">
                         <input
                           type="number"
                           placeholder="成本价"
                           value={pos.cost}
                           onChange={(e) => updatePosition(s.code, 'cost', e.target.value)}
-                          className="bg-black/40 border border-white/10 rounded-lg w-28 px-3 py-1.5 text-sm font-sans focus:border-blue-500 outline-none transition-all"
+                          className="bg-black/40 border border-white/10 rounded-lg w-24 px-2 py-1 text-xs font-sans focus:border-blue-500 outline-none transition-all"
                         />
                         <input
                           type="number"
                           placeholder="持仓量"
                           value={pos.amount}
                           onChange={(e) => updatePosition(s.code, 'amount', e.target.value)}
-                          className="bg-black/40 border border-white/10 rounded-lg w-28 px-3 py-1.5 text-sm font-sans focus:border-blue-500 outline-none transition-all"
+                          className="bg-black/40 border border-white/10 rounded-lg w-24 px-2 py-1 text-xs font-sans focus:border-blue-500 outline-none transition-all"
                         />
                       </div>
                     </td>
-                    <td className={`px-6 py-5`}>
+                    <td className={`px-5 py-2`}>
                       {profit !== 0 ? (
                         <div className="flex flex-col">
-                          <span className={`text-xl font-black font-sans ${profit >= 0 ? 'text-red-500' : 'text-emerald-500'}`}>
+                          <span className={`text-lg font-black font-sans ${profit >= 0 ? 'text-red-500' : 'text-emerald-500'}`}>
                             {profit >= 0 ? '+' : ''}{profit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                           </span>
-                          <span className={`text-sm font-bold font-sans ${profit >= 0 ? 'text-red-500/80' : 'text-emerald-500/80'}`}>
+                          <span className={`text-xs font-bold font-sans ${profit >= 0 ? 'text-red-500/80' : 'text-emerald-500/80'}`}>
                             {profit >= 0 ? '+' : ''}{profitPct.toFixed(2)}%
                           </span>
                         </div>
                       ) : (
-                        <span className="text-gray-700 font-bold">未持仓</span>
+                        <span className="text-gray-700 font-bold text-xs uppercase">未持仓</span>
                       )}
                     </td>
-                    <td className="px-6 py-5">
+                    <td className="px-5 py-2">
                        {announcements[s.code] ? (
                          <a 
                            href={announcements[s.code].url} 
@@ -318,24 +318,24 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
                              e.stopPropagation();
                              markAnnAsRead(announcements[s.code].id);
                            }}
-                           className={`text-xs max-w-[200px] block truncate transition-colors ${readAnnouncements.includes(announcements[s.code].id) ? 'text-gray-600' : 'text-red-500 hover:text-red-400 font-bold'}`}
+                           className={`text-[11px] max-w-[150px] block truncate transition-colors ${readAnnouncements.includes(announcements[s.code].id) ? 'text-gray-600' : 'text-red-500 hover:text-red-400 font-bold'}`}
                            title={announcements[s.code].title}
                          >
                            {announcements[s.code].title}
                          </a>
                        ) : (
-                         <span className="text-[10px] text-gray-700 font-bold uppercase">无公告</span>
+                         <span className="text-[9px] text-gray-700 font-bold uppercase">无公告</span>
                        )}
                     </td>
-                    <td className="px-6 py-5 text-right">
+                    <td className="px-5 py-2 text-right">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           removeStock(s.code);
                         }}
-                        className="bg-red-500/10 hover:bg-red-500/20 text-red-500 p-2.5 rounded-xl transition-all active:scale-90"
+                        className="bg-red-500/10 hover:bg-red-500/20 text-red-500 p-1.5 rounded-lg transition-all active:scale-90"
                       >
-                        <Trash2 size={18} />
+                        <Trash2 size={16} />
                       </button>
                     </td>
                   </motion.tr>

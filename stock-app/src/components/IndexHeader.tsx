@@ -36,7 +36,7 @@ export const IndexHeader: React.FC = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
       {data.map((idx) => {
         const isUp = parseFloat(idx.pct) >= 0;
         return (
@@ -44,10 +44,10 @@ export const IndexHeader: React.FC = () => {
             key={idx.code}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass p-6 rounded-2xl flex flex-col items-center justify-center transition-all hover:border-white/10"
+            className="glass p-3 rounded-2xl flex flex-col items-center justify-center transition-all hover:border-white/10"
           >
-            <span className="text-gray-400 text-sm font-medium mb-1">{idx.name}</span>
-            <span className={`text-3xl font-bold mb-2 ${isUp ? 'stock-up' : 'stock-down'}`}>
+            <span className="text-gray-400 text-xs font-medium mb-0.5">{idx.name}</span>
+            <span className={`text-2xl font-bold mb-1 ${isUp ? 'stock-up' : 'stock-down'}`}>
               {idx.price}
             </span>
             <div className={`flex gap-2 text-sm font-semibold ${isUp ? 'stock-up' : 'stock-down'}`}>
