@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
+import iconv from 'iconv-lite';
 
 // Cache for historical data
 const cache: Record<string, { data: any, timestamp: number }> = {};
@@ -42,7 +43,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform to lightweight-charts format
-    const result = data.map((item: any) => ({
+    let result = data.map((item: any) => ({
       time: item.day.includes(' ') ? item.day.split(' ')[0] : item.day,
       open: parseFloat(item.open),
       high: parseFloat(item.high),
@@ -50,6 +51,49 @@ export async function GET(request: NextRequest) {
       close: parseFloat(item.close),
       volume: parseFloat(item.volume),
     }));
+
+    // Fetch real-time quote to append today's data if scale is 240 (daily)
+    if (scale === '240' && result.length > 0) {
+      try {
+        const quoteUrl = `http://hq.sinajs.cn/list=${symbol}`;
+        const quoteRes = await axios.get(quoteUrl, { 
+          responseType: 'arraybuffer',
+          timeout: 2000,
+          headers: { 'Referer': 'https://finance.sina.com.cn/' }
+        });
+        const quoteStr = iconv.decode(Buffer.from(quoteRes.data), 'GBK');
+        const match = quoteStr.match(/="(.+?)"/);
+        if (match) {
+          const fields = match[1].split(',');
+          if (fields.length >= 32) {
+            const today = fields[30]; // YYYY-MM-DD
+            const lastDate = result[result.length - 1].time;
+            
+            if (today > (lastDate as string)) {
+              result.push({
+                time: today,
+                open: parseFloat(fields[1]),
+                high: parseFloat(fields[4]),
+                low: parseFloat(fields[5]),
+                close: parseFloat(fields[3]),
+                volume: parseFloat(fields[8]) / 100, // Sina kline volume is usually in lots, quote is in shares
+              });
+            } else if (today === lastDate) {
+              // Update today's incomplete candle
+              const idx = result.length - 1;
+              result[idx] = {
+                ...result[idx],
+                high: Math.max(result[idx].high, parseFloat(fields[4])),
+                low: Math.min(result[idx].low, parseFloat(fields[5])),
+                close: parseFloat(fields[3]),
+              };
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Failed to fetch real-time quote for kline overlap', e);
+      }
+    }
 
     // Update cache
     cache[cacheKey] = { data: result, timestamp: Date.now() };
