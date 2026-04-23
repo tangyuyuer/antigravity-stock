@@ -48,23 +48,32 @@ export const MarketSentiment: React.FC = () => {
 
   return (
     <div className="glass p-3 rounded-2xl border border-white/5 bg-gradient-to-r from-white/5 to-transparent">
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-        {/* Left: Indicator & Text */}
-        <div className="flex items-center gap-3">
-          <div className={`p-1.5 rounded-xl ${status.bg}`}>
-            <Thermometer size={18} className={status.color} />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className={`text-base font-black tracking-tight ${status.color}`}>{status.text}</span>
-              <span className="text-lg">{status.icon}</span>
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+        {/* Left: Ratio & Status */}
+        <div className="flex items-center gap-6">
+          <div className="flex flex-col">
+            <div className={`text-2xl font-black font-sans ${status.color}`}>
+              {stats.ratio.toFixed(1)}%
             </div>
-            <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">全市场涨跌分布 (A股)</p>
+            <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest whitespace-nowrap">上涨家数占比</p>
+          </div>
+
+          <div className="flex items-center gap-3 border-l border-white/10 pl-6">
+            <div className={`p-1.5 rounded-xl ${status.bg}`}>
+              <Thermometer size={18} className={status.color} />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className={`text-base font-black tracking-tight ${status.color}`}>{status.text}</span>
+                <span className="text-lg">{status.icon}</span>
+              </div>
+              <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest whitespace-nowrap">全市场涨跌分布 (A股)</p>
+            </div>
           </div>
         </div>
 
-        {/* Center: Bar Chart */}
-        <div className="flex-1 w-full max-w-md space-y-2">
+        {/* Center/Right: Bar Chart */}
+        <div className="flex-1 w-full max-w-xl space-y-2">
           <div className="flex justify-between text-[10px] font-bold">
             <span className="text-red-500 flex items-center gap-1"><TrendingUp size={10}/> 涨 {stats.up}</span>
             <span className="text-gray-500 flex items-center gap-1"><Minus size={10}/> 平 {stats.flat}</span>
@@ -87,14 +96,6 @@ export const MarketSentiment: React.FC = () => {
               className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600"
             />
           </div>
-        </div>
-
-        {/* Right: Ratio */}
-        <div className="text-right hidden md:block">
-          <div className="text-xl font-black text-white font-sans">
-            {stats.ratio.toFixed(1)}%
-          </div>
-          <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">上涨家数占比</p>
         </div>
       </div>
     </div>
