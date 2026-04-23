@@ -21,9 +21,10 @@ export async function GET() {
     }
 
     // Summing up SSE and SZSE counts
+    // f104: Up, f105: Down, f106: Flat
     const up = (list[0].f104 || 0) + (list[1].f104 || 0);
-    const flat = (list[0].f105 || 0) + (list[1].f105 || 0);
-    const down = (list[0].f106 || 0) + (list[1].f106 || 0);
+    const down = (list[0].f105 || 0) + (list[1].f105 || 0);
+    const flat = (list[0].f106 || 0) + (list[1].f106 || 0);
     const total = up + flat + down;
 
     const data = {

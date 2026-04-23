@@ -58,7 +58,7 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
     localStorage.setItem('read_announcements', JSON.stringify(readAnnouncements));
     fetchQuotes();
     fetchAnnouncements();
-  }, [codes, positions]);
+  }, [codes, positions, readAnnouncements]);
 
   const fetchQuotes = async () => {
     if (codes.length === 0) {
