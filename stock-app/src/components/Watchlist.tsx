@@ -286,14 +286,14 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
                       placeholder="成本价"
                       value={pos.cost}
                       onChange={(e) => updatePosition(s.code, 'cost', e.target.value)}
-                      className="bg-black/40 border border-white/10 rounded-lg w-full px-2 py-1 text-xs font-sans focus:border-blue-500 outline-none transition-all"
+                      className="bg-black/20 border border-white/10 rounded px-2 py-0.5 text-[10px] w-20 font-sans focus:border-blue-500/50 outline-none transition-all"
                     />
                     <input
                       type="number"
                       placeholder="持仓量"
                       value={pos.amount}
                       onChange={(e) => updatePosition(s.code, 'amount', e.target.value)}
-                      className="bg-black/40 border border-white/10 rounded-lg w-full px-2 py-1 text-xs font-sans focus:border-blue-500 outline-none transition-all"
+                      className="bg-black/20 border border-white/10 rounded px-2 py-0.5 text-[10px] w-20 font-sans focus:border-blue-500/50 outline-none transition-all"
                     />
                   </div>
                 </div>
