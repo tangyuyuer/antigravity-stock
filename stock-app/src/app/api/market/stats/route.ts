@@ -11,7 +11,7 @@ export async function GET() {
 
   try {
     // Fetch SSE and SZSE market stats
-    const url = 'https://push2.eastmoney.com/api/qt/ulist.rt/get?secid=1.000001,0.399001&fields=f104,f105,f106';
+    const url = 'https://push2.eastmoney.com/api/qt/ulist.np/get?secids=1.000001,0.399001&fields=f104,f105,f106';
     const response = await axios.get(url, { timeout: 5000 });
     
     const list = response.data?.data?.diff || [];

@@ -31,9 +31,9 @@ export async function GET(request: NextRequest) {
     if (latest) {
       const data = {
         id: latest.art_code,
-        title: latest.ann_title,
-        date: latest.ann_date,
-        url: `https://data.eastmoney.com/notices/detail/${code}/${latest.art_code}.html`
+        title: latest.title || latest.title_ch || '无标题公告',
+        date: latest.notice_date,
+        url: `https://data.eastmoney.com/notices/stock/${code}.html`
       };
       cache[code] = { data, timestamp: Date.now() };
       return NextResponse.json(data);

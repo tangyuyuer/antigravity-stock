@@ -190,7 +190,7 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
         
         <div className="glass p-6 rounded-2xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent flex items-center justify-between">
            <div>
-             <span className="text-gray-500 text-[11px] font-bold uppercase tracking-widest block mb-1">今日市场监控</span>
+             <span className="text-gray-500 text-[11px] font-bold uppercase tracking-widest block mb-1">自选监控统计</span>
              <div className="text-xl font-bold text-gray-200">
                {quotes.length} <span className="text-sm text-gray-500">只监控标的</span>
              </div>
@@ -318,7 +318,7 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
                              e.stopPropagation();
                              markAnnAsRead(announcements[s.code].id);
                            }}
-                           className={`text-xs max-w-[200px] block truncate transition-colors ${readAnnouncements.includes(announcements[s.code].id) ? 'text-gray-600' : 'text-blue-400 hover:text-blue-300'}`}
+                           className={`text-xs max-w-[200px] block truncate transition-colors ${readAnnouncements.includes(announcements[s.code].id) ? 'text-gray-600' : 'text-red-500 hover:text-red-400 font-bold'}`}
                            title={announcements[s.code].title}
                          >
                            {announcements[s.code].title}

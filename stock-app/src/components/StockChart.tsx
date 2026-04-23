@@ -48,7 +48,12 @@ export const StockChart: React.FC<ChartProps> = ({ symbol }) => {
         const res = await fetch(`/api/stock/kline?symbol=${symbol}&scale=240&datalen=500`);
         const data = await res.json();
         series.setData(data);
-        chart.timeScale().fitContent();
+        const len = data.length;
+        if (len > 90) {
+          chart.timeScale().setVisibleLogicalRange({ from: len - 90, to: len - 1 });
+        } else {
+          chart.timeScale().fitContent();
+        }
       } catch (e) {
         console.error('Failed to fetch kline', e);
       }
