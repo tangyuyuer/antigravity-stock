@@ -6,6 +6,7 @@ import { MarketSentiment } from '@/components/MarketSentiment';
 import { Watchlist } from '@/components/Watchlist';
 import { StockChart } from '@/components/StockChart';
 import { PositionCalculator } from '@/components/PositionCalculator';
+import { MarketAlarm } from '@/components/MarketAlarm';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, LayoutDashboard, Calculator } from 'lucide-react';
 
@@ -25,6 +26,9 @@ export default function Home() {
             <h1 className="text-xl font-black tracking-tighter text-white">A股实时监控</h1>
           </div>
           <div className="flex items-center gap-3">
+            {/* Alarm Button */}
+            <MarketAlarm />
+
             {/* Calculator Button */}
             <button 
               onClick={() => setShowCalculator(true)}
