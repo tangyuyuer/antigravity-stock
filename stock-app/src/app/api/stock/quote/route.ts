@@ -66,6 +66,7 @@ export async function GET(request: NextRequest) {
         change: change.toFixed(2),
         pct: pctChange.toFixed(2),
         open: fields[1],
+        prevClose: fields[2],
         high: fields[4],
         low: fields[5],
         volume: fields[8],

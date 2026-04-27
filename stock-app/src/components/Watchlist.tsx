@@ -11,6 +11,7 @@ interface StockQuote {
   change: string;
   pct: string;
   volume: string;
+  prevClose: string;
   turnover?: string;
 }
 
@@ -160,6 +161,14 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
 
   const totalProfitPct = totalCost > 0 ? (totalProfit / totalCost) * 100 : 0;
 
+  const todayProfit = quotes.reduce((acc, s) => {
+    const pos = positions[s.code];
+    if (pos && pos.amount && s.prevClose) {
+      return acc + (parseFloat(s.price) - parseFloat(s.prevClose)) * parseFloat(pos.amount);
+    }
+    return acc;
+  }, 0);
+
 
   const handleReorder = (newCodes: string[]) => {
     setCodes(newCodes);
@@ -168,10 +177,25 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
   return (
     <div className="space-y-4">
       {/* Total Performance Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {/* Today's P/L Card */}
+        <div className="glass p-4 rounded-2xl border border-white/5 bg-gradient-to-br from-emerald-600/10 to-transparent">
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">当日实时盈亏 (元)</span>
+            <div className={`p-1 rounded-lg ${todayProfit >= 0 ? 'bg-red-500/10' : 'bg-emerald-500/10'}`}>
+               {todayProfit >= 0 ? <TrendingUp size={14} className="text-red-500" /> : <TrendingDown size={14} className="text-emerald-500" />}
+            </div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className={`text-3xl font-black font-sans ${todayProfit >= 0 ? 'text-red-500' : 'text-emerald-500'}`}>
+              {todayProfit >= 0 ? '+' : ''}{todayProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            </span>
+          </div>
+        </div>
+
         <div className="glass p-4 rounded-2xl border border-white/5 bg-gradient-to-br from-blue-600/10 to-transparent">
           <div className="flex justify-between items-center mb-1">
-            <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">持仓实时总盈亏 (元)</span>
+            <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">持仓累计盈亏 (元)</span>
             <div className={`p-1 rounded-lg ${totalProfit >= 0 ? 'bg-red-500/10' : 'bg-emerald-500/10'}`}>
                {totalProfit >= 0 ? <TrendingUp size={14} className="text-red-500" /> : <TrendingDown size={14} className="text-emerald-500" />}
             </div>
@@ -230,7 +254,7 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
           <div className="col-span-1">当前价格</div>
           <div className="col-span-1">当日涨幅</div>
           <div className="col-span-2">持仓/成本</div>
-          <div className="col-span-2">实时盈亏</div>
+          <div className="col-span-2">实时盈亏 (当日/累计)</div>
           <div className="col-span-2">最新公告</div>
           <div className="col-span-1 text-right">管理</div>
         </div>
@@ -301,12 +325,22 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
                 <div className="col-span-2">
                   {profit !== 0 ? (
                     <div className="flex flex-col">
-                      <span className={`text-lg font-black font-sans ${profit >= 0 ? 'text-red-500' : 'text-emerald-500'}`}>
-                        {profit >= 0 ? '+' : ''}{profit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                      </span>
-                      <span className={`text-xs font-bold font-sans ${profit >= 0 ? 'text-red-500/80' : 'text-emerald-500/80'}`}>
-                        {profit >= 0 ? '+' : ''}{profitPct.toFixed(2)}%
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-gray-500 font-bold">当日</span>
+                        <span className={`text-sm font-bold font-sans ${parseFloat(s.change) >= 0 ? 'text-red-500' : 'text-emerald-500'}`}>
+                          {(parseFloat(s.price) - parseFloat(s.prevClose)) * amount >= 0 ? '+' : ''}
+                          {((parseFloat(s.price) - parseFloat(s.prevClose)) * amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-gray-500 font-bold">累计</span>
+                        <span className={`text-base font-black font-sans ${profit >= 0 ? 'text-red-500' : 'text-emerald-500'}`}>
+                          {profit >= 0 ? '+' : ''}{profit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        </span>
+                        <span className={`text-[10px] font-bold font-sans ${profit >= 0 ? 'text-red-500/80' : 'text-emerald-500/80'}`}>
+                          ({profit >= 0 ? '+' : ''}{profitPct.toFixed(2)}%)
+                        </span>
+                      </div>
                     </div>
                   ) : (
                     <span className="text-gray-700 font-bold text-[10px] uppercase">未持仓</span>
