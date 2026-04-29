@@ -1,0 +1,66 @@
+{
+  "refresh_run_id": "20260429T100234403471Z",
+  "generated_at": "2026-04-29T10:02:34.403516+00:00",
+  "overall_status": "partial",
+  "stages": {
+    "scan": "success",
+    "conventions": "partial",
+    "structure": "success",
+    "knowledge_graph": "success",
+    "indexes": "success",
+    "module_docs": "partial",
+    "git_insights": "partial",
+    "module_registry": "partial",
+    "gitnexus": "skipped"
+  },
+  "modules": {
+    "stock-app_components": "partial",
+    "stock-app_app": "partial",
+    "__workspace_root__": "partial",
+    "stock-app_lib": "partial"
+  },
+  "failures": [
+    {
+      "stage": "conventions",
+      "module": null,
+      "group": null,
+      "reason": "litellm.AuthenticationError: AuthenticationError: OpenAIException - The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable"
+    },
+    {
+      "stage": "module_docs",
+      "module": "stock-app_components",
+      "group": "main",
+      "reason": "litellm.AuthenticationError: AuthenticationError: OpenAIException - The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable"
+    },
+    {
+      "stage": "module_docs",
+      "module": "stock-app_app",
+      "group": "main",
+      "reason": "litellm.AuthenticationError: AuthenticationError: OpenAIException - The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable"
+    },
+    {
+      "stage": "module_docs",
+      "module": "__workspace_root__",
+      "group": "main",
+      "reason": "litellm.AuthenticationError: AuthenticationError: OpenAIException - The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable"
+    },
+    {
+      "stage": "module_docs",
+      "module": "stock-app_lib",
+      "group": "main",
+      "reason": "litellm.AuthenticationError: AuthenticationError: OpenAIException - The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable"
+    },
+    {
+      "stage": "git_insights",
+      "module": null,
+      "group": null,
+      "reason": "litellm.AuthenticationError: AuthenticationError: OpenAIException - The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable"
+    },
+    {
+      "stage": "module_registry",
+      "module": null,
+      "group": null,
+      "reason": "litellm.AuthenticationError: AuthenticationError: OpenAIException - The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable"
+    }
+  ]
+}

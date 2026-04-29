@@ -1,108 +1,62 @@
 import { NextRequest, NextResponse } from 'next/server';
-import axios from 'axios';
-import iconv from 'iconv-lite';
 
 export const dynamic = 'force-dynamic';
-
-// Cache for historical data
-const cache: Record<string, { data: any, timestamp: number }> = {};
-const CACHE_TTL = 10000; // 10 seconds
+const TDX_API = 'http://localhost:8080';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const symbol = searchParams.get('symbol'); // e.g. sh000001
-  const scale = searchParams.get('scale') || '240'; // 240 is daily
-  const datalen = searchParams.get('datalen') || '240';
+  const fullSymbol = searchParams.get('symbol') || ''; 
+  const type = searchParams.get('type') || 'day';
 
-  if (!symbol) {
-    return NextResponse.json({ error: 'Missing symbol parameter' }, { status: 400 });
-  }
-
-  // Check cache
-  const cacheKey = `${symbol}_${scale}_${datalen}`;
-  const cached = cache[cacheKey];
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return NextResponse.json(cached.data, {
-      headers: { 'X-Cache': 'HIT' }
-    });
-  }
+  if (!fullSymbol) return NextResponse.json([]);
 
   try {
-    // Sina K-line API
-    const url = `http://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${symbol}&scale=${scale}&ma=no&datalen=${datalen}`;
-    
-    const response = await axios.get(url, {
-      headers: {
-        'Referer': 'https://finance.sina.com.cn/',
-        'User-Agent': 'Mozilla/5.0',
-      },
-      timeout: 5000,
-    });
+    const symbol = fullSymbol.replace(/^(sh|sz|bj)/i, '');
+    let tdxType = '4';
+    if (type === 'week') tdxType = '5';
+    if (type === 'month') tdxType = '6';
 
-    const data = response.data;
-    if (!Array.isArray(data)) {
-      return NextResponse.json({ error: 'Invalid data format' }, { status: 500 });
+    const url = type === 'minute'
+      ? `${TDX_API}/api/minute?code=${symbol}`
+      : `${TDX_API}/api/kline?code=${symbol}&type=${tdxType}`;
+
+    const response = await fetch(url);
+    const json = await response.json();
+    if (json.code !== 0 || !json.data) return NextResponse.json([]);
+
+    const list = json.data.List || json.data.list || [];
+
+    if (type === 'minute') {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = now.getMonth();
+      const d = now.getDate();
+
+      return NextResponse.json(list.map((bar: any) => {
+        // 后端返回的是 Price, Number, Time (大写开头)
+        const timeStr = bar.Time || '09:30';
+        const [hh, mm] = timeStr.split(':').map(Number);
+        const localDate = new Date(y, m, d, hh, mm, 0);
+        
+        return {
+          time: Math.floor(localDate.getTime() / 1000),
+          price: (bar.Price || 0) / 1000,
+          volume: bar.Number || 0,
+        };
+      }));
     }
 
-    // Transform to lightweight-charts format
-    let result = data.map((item: any) => ({
-      time: item.day.includes(' ') ? item.day.split(' ')[0] : item.day,
-      open: parseFloat(item.open),
-      high: parseFloat(item.high),
-      low: parseFloat(item.low),
-      close: parseFloat(item.close),
-      volume: parseFloat(item.volume),
-    }));
-
-    // Fetch real-time quote to append today's data if scale is 240 (daily)
-    if (scale === '240' && result.length > 0) {
-      try {
-        const quoteUrl = `http://hq.sinajs.cn/list=${symbol}`;
-        const quoteRes = await axios.get(quoteUrl, { 
-          responseType: 'arraybuffer',
-          timeout: 2000,
-          headers: { 'Referer': 'https://finance.sina.com.cn/' }
-        });
-        const quoteStr = iconv.decode(Buffer.from(quoteRes.data), 'GBK');
-        const match = quoteStr.match(/="(.+?)"/);
-        if (match) {
-          const fields = match[1].split(',');
-          if (fields.length >= 32) {
-            const today = fields[30]; // YYYY-MM-DD
-            const lastDate = result[result.length - 1].time;
-            
-            if (today > (lastDate as string)) {
-              result.push({
-                time: today,
-                open: parseFloat(fields[1]),
-                high: parseFloat(fields[4]),
-                low: parseFloat(fields[5]),
-                close: parseFloat(fields[3]),
-                volume: parseFloat(fields[8]) / 100, // Sina kline volume is usually in lots, quote is in shares
-              });
-            } else if (today === lastDate) {
-              // Update today's incomplete candle
-              const idx = result.length - 1;
-              result[idx] = {
-                ...result[idx],
-                high: Math.max(result[idx].high, parseFloat(fields[4])),
-                low: Math.min(result[idx].low, parseFloat(fields[5])),
-                close: parseFloat(fields[3]),
-              };
-            }
-          }
-        }
-      } catch (e) {
-        console.error('Failed to fetch real-time quote for kline overlap', e);
-      }
-    }
-
-    // Update cache
-    cache[cacheKey] = { data: result, timestamp: Date.now() };
-
-    return NextResponse.json(result);
-  } catch (error: any) {
-    console.error('K-line API Error:', error.message);
-    return NextResponse.json({ error: 'Failed to fetch kline data' }, { status: 500 });
+    return NextResponse.json(list.map((bar: any) => {
+      return {
+        time: bar.Time.split('T')[0],
+        open: (bar.Open || 0) / 1000,
+        high: (bar.High || 0) / 1000,
+        low: (bar.Low || 0) / 1000,
+        close: (bar.Close || 0) / 1000,
+        volume: bar.Volume || 0,
+      };
+    }).filter((bar: any) => bar.time && bar.close > 0));
+  } catch (error) {
+    return NextResponse.json([]);
   }
 }

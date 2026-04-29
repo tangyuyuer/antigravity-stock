@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell, BellOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createWorkerInterval } from '@/lib/worker-timer';
 
 export const MarketAlarm: React.FC = () => {
   const [isEnabled, setIsEnabled] = useState(false);
@@ -21,6 +22,21 @@ export const MarketAlarm: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('market-alarm-enabled', String(isEnabled));
   }, [isEnabled]);
+
+  const requestNotificationPermission = async () => {
+    if (!('Notification' in window)) return;
+    if (Notification.permission === 'default') {
+      await Notification.requestPermission();
+    }
+  };
+
+  const handleToggle = async () => {
+    const nextState = !isEnabled;
+    if (nextState) {
+      await requestNotificationPermission();
+    }
+    setIsEnabled(nextState);
+  };
 
   useEffect(() => {
     if (!isEnabled) return;
@@ -45,19 +61,28 @@ export const MarketAlarm: React.FC = () => {
         console.warn('Audio play blocked or failed. Browser policy may require user interaction.', e);
       });
 
-      // Show visual notification
+      // Show native notification if permission granted
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('尾盘提醒 (14:57)', {
+          body: '尾盘时间到！请注意操作。',
+          icon: '/favicon.ico'
+        });
+      }
+
+      // Show visual notification in UI
       setIsShowingNotification(true);
       setTimeout(() => setIsShowingNotification(false), 10000); // Hide after 10 seconds
     };
 
-    const interval = setInterval(checkTime, 1000);
-    return () => clearInterval(interval);
+    // Use worker timer to avoid background throttling (check every 10 seconds)
+    const cleanup = createWorkerInterval(checkTime, 10000);
+    return cleanup;
   }, [isEnabled]);
 
   return (
     <>
       <button
-        onClick={() => setIsEnabled(!isEnabled)}
+        onClick={handleToggle}
         className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all active:scale-95 group relative ${
           isEnabled 
             ? 'bg-amber-500/10 border-amber-500/30 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.1)]' 

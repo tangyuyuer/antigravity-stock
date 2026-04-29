@@ -53,7 +53,7 @@ export const MarketSentiment: React.FC = () => {
         <div className="flex items-center gap-6">
           <div className="flex flex-col">
             <div className={`text-2xl font-black font-sans ${status.color}`}>
-              {stats.ratio.toFixed(1)}%
+              {(stats.ratio || 0).toFixed(1)}%
             </div>
             <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest whitespace-nowrap">上涨家数占比</p>
           </div>

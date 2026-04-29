@@ -1,0 +1,1277 @@
+{
+  "schema": "antigravity-knowledge-graph-v2",
+  "created_at_utc": "2026-04-29T10:02:43.357109+00:00",
+  "workspace": "C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+  "summary": {
+    "file_count": 43,
+    "walked_file_count": 43,
+    "languages": {
+      "TypeScript (React)": 8,
+      "TypeScript": 7,
+      "Markdown": 4,
+      "JSON": 4,
+      "Python": 1,
+      "TOML": 1,
+      "JavaScript": 1,
+      "CSS": 1
+    },
+    "frameworks": [
+      "GitHub Actions"
+    ],
+    "type_distribution": {
+      "other": 10,
+      "code": 27,
+      "media": 5,
+      "binary": 1
+    },
+    "semantic_files": 17,
+    "semantic_edges": 34,
+    "semantic_files_by_language": {
+      "JavaScript": 1,
+      "Python": 1,
+      "TypeScript": 7,
+      "TypeScript (React)": 8
+    },
+    "semantic_edges_by_type": {
+      "declares_package": 17,
+      "defines": 10,
+      "entrypoint": 1,
+      "imports": 6
+    },
+    "semantic_adapters": {
+      "generic": 16,
+      "python": 1
+    },
+    "generic_fallback_file_count": 16,
+    "parse_error_file_count": 0
+  },
+  "diagnostics": {
+    "generic_fallback_files": [
+      "stock-app/next-env.d.ts",
+      "stock-app/next.config.ts",
+      "stock-app/scripts/update_data.js",
+      "stock-app/src/app/api/market/stats/route.ts",
+      "stock-app/src/app/api/stock/announcements/route.ts",
+      "stock-app/src/app/api/stock/kline/route.ts",
+      "stock-app/src/app/api/stock/quote/route.ts",
+      "stock-app/src/app/layout.tsx",
+      "stock-app/src/app/page.tsx",
+      "stock-app/src/components/IndexHeader.tsx",
+      "stock-app/src/components/MarketAlarm.tsx",
+      "stock-app/src/components/MarketSentiment.tsx",
+      "stock-app/src/components/PositionCalculator.tsx",
+      "stock-app/src/components/StockChart.tsx",
+      "stock-app/src/components/Watchlist.tsx",
+      "stock-app/src/lib/constants.ts"
+    ],
+    "parse_error_files": []
+  },
+  "nodes": [
+    {
+      "id": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "type": "workspace",
+      "label": "antigravity-stock-main"
+    },
+    {
+      "id": "language:typescript_(react)",
+      "type": "language",
+      "label": "TypeScript (React)",
+      "count": 8
+    },
+    {
+      "id": "language:typescript",
+      "type": "language",
+      "label": "TypeScript",
+      "count": 7
+    },
+    {
+      "id": "language:markdown",
+      "type": "language",
+      "label": "Markdown",
+      "count": 4
+    },
+    {
+      "id": "language:json",
+      "type": "language",
+      "label": "JSON",
+      "count": 4
+    },
+    {
+      "id": "language:python",
+      "type": "language",
+      "label": "Python",
+      "count": 1
+    },
+    {
+      "id": "language:toml",
+      "type": "language",
+      "label": "TOML",
+      "count": 1
+    },
+    {
+      "id": "language:javascript",
+      "type": "language",
+      "label": "JavaScript",
+      "count": 1
+    },
+    {
+      "id": "language:css",
+      "type": "language",
+      "label": "CSS",
+      "count": 1
+    },
+    {
+      "id": "framework:github_actions",
+      "type": "framework",
+      "label": "GitHub Actions"
+    },
+    {
+      "id": "dir:artifacts",
+      "type": "directory",
+      "label": "artifacts"
+    },
+    {
+      "id": "dir:stock-app",
+      "type": "directory",
+      "label": "stock-app"
+    },
+    {
+      "id": "file:.clinerules",
+      "type": "other",
+      "label": ".clinerules",
+      "size": 219,
+      "mime": "application/octet-stream"
+    },
+    {
+      "id": "file:.cursorrules",
+      "type": "other",
+      "label": ".cursorrules",
+      "size": 321,
+      "mime": "application/octet-stream"
+    },
+    {
+      "id": "file:.env",
+      "type": "other",
+      "label": ".env",
+      "size": 188,
+      "mime": "application/octet-stream"
+    },
+    {
+      "id": "file:.gitignore",
+      "type": "other",
+      "label": ".gitignore",
+      "size": 61,
+      "mime": "application/octet-stream"
+    },
+    {
+      "id": "file:.windsurfrules",
+      "type": "other",
+      "label": ".windsurfrules",
+      "size": 222,
+      "mime": "application/octet-stream"
+    },
+    {
+      "id": "file:AGENTS.md",
+      "type": "code",
+      "label": "AGENTS.md",
+      "size": 842,
+      "mime": "text/markdown"
+    },
+    {
+      "id": "file:CLAUDE.md",
+      "type": "code",
+      "label": "CLAUDE.md",
+      "size": 238,
+      "mime": "text/markdown"
+    },
+    {
+      "id": "file:CONTEXT.md",
+      "type": "code",
+      "label": "CONTEXT.md",
+      "size": 625,
+      "mime": "text/markdown"
+    },
+    {
+      "id": "file:fetch_data.py",
+      "type": "code",
+      "label": "fetch_data.py",
+      "size": 7212,
+      "mime": "text/x-python",
+      "language": "Python",
+      "semantic_adapter": "python",
+      "semantic_package_identity": "fetch_data",
+      "semantic_module_name": "fetch_data",
+      "semantic_import_count": 6,
+      "semantic_symbol_count": 10,
+      "is_test_file": false,
+      "entrypoints": [
+        "main"
+      ],
+      "generic_fallback": false
+    },
+    {
+      "id": "file:netlify.toml",
+      "type": "code",
+      "label": "netlify.toml",
+      "size": 170,
+      "mime": "application/octet-stream"
+    },
+    {
+      "id": "file:artifacts/.gitkeep",
+      "type": "other",
+      "label": "artifacts/.gitkeep",
+      "size": 0,
+      "mime": "application/octet-stream"
+    },
+    {
+      "id": "file:artifacts/logs/.gitkeep",
+      "type": "other",
+      "label": "artifacts/logs/.gitkeep",
+      "size": 0,
+      "mime": "application/octet-stream"
+    },
+    {
+      "id": "file:stock-app/.gitignore",
+      "type": "other",
+      "label": "stock-app/.gitignore",
+      "size": 480,
+      "mime": "application/octet-stream"
+    },
+    {
+      "id": "file:stock-app/eslint.config.mjs",
+      "type": "other",
+      "label": "stock-app/eslint.config.mjs",
+      "size": 388,
+      "mime": "text/javascript"
+    },
+    {
+      "id": "file:stock-app/next-env.d.ts",
+      "type": "code",
+      "label": "stock-app/next-env.d.ts",
+      "size": 257,
+      "mime": "video/vnd.dlna.mpeg-tts",
+      "language": "TypeScript",
+      "semantic_adapter": "generic",
+      "semantic_package_identity": "stock-app.next-env.d",
+      "semantic_module_name": "stock-app.next-env.d",
+      "semantic_import_count": 0,
+      "semantic_symbol_count": 0,
+      "is_test_file": false,
+      "entrypoints": [],
+      "generic_fallback": true
+    },
+    {
+      "id": "file:stock-app/next.config.ts",
+      "type": "code",
+      "label": "stock-app/next.config.ts",
+      "size": 202,
+      "mime": "video/vnd.dlna.mpeg-tts",
+      "language": "TypeScript",
+      "semantic_adapter": "generic",
+      "semantic_package_identity": "stock-app.next.config",
+      "semantic_module_name": "stock-app.next.config",
+      "semantic_import_count": 0,
+      "semantic_symbol_count": 0,
+      "is_test_file": false,
+      "entrypoints": [],
+      "generic_fallback": true
+    },
+    {
+      "id": "file:stock-app/package-lock.json",
+      "type": "code",
+      "label": "stock-app/package-lock.json",
+      "size": 245483,
+      "mime": "application/json"
+    },
+    {
+      "id": "file:stock-app/package.json",
+      "type": "code",
+      "label": "stock-app/package.json",
+      "size": 736,
+      "mime": "application/json"
+    },
+    {
+      "id": "file:stock-app/postcss.config.mjs",
+      "type": "other",
+      "label": "stock-app/postcss.config.mjs",
+      "size": 94,
+      "mime": "text/javascript"
+    },
+    {
+      "id": "file:stock-app/README.md",
+      "type": "code",
+      "label": "stock-app/README.md",
+      "size": 1449,
+      "mime": "text/markdown"
+    },
+    {
+      "id": "file:stock-app/tsconfig.json",
+      "type": "code",
+      "label": "stock-app/tsconfig.json",
+      "size": 719,
+      "mime": "application/json"
+    },
+    {
+      "id": "file:stock-app/public/file.svg",
+      "type": "media",
+      "label": "stock-app/public/file.svg",
+      "size": 391,
+      "mime": "image/svg+xml"
+    },
+    {
+      "id": "file:stock-app/public/globe.svg",
+      "type": "media",
+      "label": "stock-app/public/globe.svg",
+      "size": 1035,
+      "mime": "image/svg+xml"
+    },
+    {
+      "id": "file:stock-app/public/next.svg",
+      "type": "media",
+      "label": "stock-app/public/next.svg",
+      "size": 1375,
+      "mime": "image/svg+xml"
+    },
+    {
+      "id": "file:stock-app/public/vercel.svg",
+      "type": "media",
+      "label": "stock-app/public/vercel.svg",
+      "size": 128,
+      "mime": "image/svg+xml"
+    },
+    {
+      "id": "file:stock-app/public/window.svg",
+      "type": "media",
+      "label": "stock-app/public/window.svg",
+      "size": 385,
+      "mime": "image/svg+xml"
+    },
+    {
+      "id": "file:stock-app/public/data/market.json",
+      "type": "code",
+      "label": "stock-app/public/data/market.json",
+      "size": 828,
+      "mime": "application/json"
+    },
+    {
+      "id": "file:stock-app/scripts/update_data.js",
+      "type": "code",
+      "label": "stock-app/scripts/update_data.js",
+      "size": 1916,
+      "mime": "text/javascript",
+      "language": "JavaScript",
+      "semantic_adapter": "generic",
+      "semantic_package_identity": "stock-app.scripts.update_data",
+      "semantic_module_name": "stock-app.scripts.update_data",
+      "semantic_import_count": 0,
+      "semantic_symbol_count": 0,
+      "is_test_file": false,
+      "entrypoints": [],
+      "generic_fallback": true
+    },
+    {
+      "id": "file:stock-app/src/app/favicon.ico",
+      "type": "binary",
+      "label": "stock-app/src/app/favicon.ico",
+      "size": 25931,
+      "mime": "image/x-icon"
+    },
+    {
+      "id": "file:stock-app/src/app/globals.css",
+      "type": "code",
+      "label": "stock-app/src/app/globals.css",
+      "size": 1043,
+      "mime": "text/css"
+    },
+    {
+      "id": "file:stock-app/src/app/layout.tsx",
+      "type": "code",
+      "label": "stock-app/src/app/layout.tsx",
+      "size": 719,
+      "mime": "application/octet-stream",
+      "language": "TypeScript (React)",
+      "semantic_adapter": "generic",
+      "semantic_package_identity": "stock-app.src.app.layout",
+      "semantic_module_name": "stock-app.src.app.layout",
+      "semantic_import_count": 0,
+      "semantic_symbol_count": 0,
+      "is_test_file": false,
+      "entrypoints": [],
+      "generic_fallback": true
+    },
+    {
+      "id": "file:stock-app/src/app/page.tsx",
+      "type": "code",
+      "label": "stock-app/src/app/page.tsx",
+      "size": 6300,
+      "mime": "application/octet-stream",
+      "language": "TypeScript (React)",
+      "semantic_adapter": "generic",
+      "semantic_package_identity": "stock-app.src.app.page",
+      "semantic_module_name": "stock-app.src.app.page",
+      "semantic_import_count": 0,
+      "semantic_symbol_count": 0,
+      "is_test_file": false,
+      "entrypoints": [],
+      "generic_fallback": true
+    },
+    {
+      "id": "file:stock-app/src/app/api/market/stats/route.ts",
+      "type": "code",
+      "label": "stock-app/src/app/api/market/stats/route.ts",
+      "size": 1530,
+      "mime": "video/vnd.dlna.mpeg-tts",
+      "language": "TypeScript",
+      "semantic_adapter": "generic",
+      "semantic_package_identity": "stock-app.src.app.api.market.stats.route",
+      "semantic_module_name": "stock-app.src.app.api.market.stats.route",
+      "semantic_import_count": 0,
+      "semantic_symbol_count": 0,
+      "is_test_file": false,
+      "entrypoints": [],
+      "generic_fallback": true
+    },
+    {
+      "id": "file:stock-app/src/app/api/stock/announcements/route.ts",
+      "type": "code",
+      "label": "stock-app/src/app/api/stock/announcements/route.ts",
+      "size": 1711,
+      "mime": "video/vnd.dlna.mpeg-tts",
+      "language": "TypeScript",
+      "semantic_adapter": "generic",
+      "semantic_package_identity": "stock-app.src.app.api.stock.announcements.route",
+      "semantic_module_name": "stock-app.src.app.api.stock.announcements.route",
+      "semantic_import_count": 0,
+      "semantic_symbol_count": 0,
+      "is_test_file": false,
+      "entrypoints": [],
+      "generic_fallback": true
+    },
+    {
+      "id": "file:stock-app/src/app/api/stock/kline/route.ts",
+      "type": "code",
+      "label": "stock-app/src/app/api/stock/kline/route.ts",
+      "size": 1963,
+      "mime": "video/vnd.dlna.mpeg-tts",
+      "language": "TypeScript",
+      "semantic_adapter": "generic",
+      "semantic_package_identity": "stock-app.src.app.api.stock.kline.route",
+      "semantic_module_name": "stock-app.src.app.api.stock.kline.route",
+      "semantic_import_count": 0,
+      "semantic_symbol_count": 0,
+      "is_test_file": false,
+      "entrypoints": [],
+      "generic_fallback": true
+    },
+    {
+      "id": "file:stock-app/src/app/api/stock/quote/route.ts",
+      "type": "code",
+      "label": "stock-app/src/app/api/stock/quote/route.ts",
+      "size": 2963,
+      "mime": "video/vnd.dlna.mpeg-tts",
+      "language": "TypeScript",
+      "semantic_adapter": "generic",
+      "semantic_package_identity": "stock-app.src.app.api.stock.quote.route",
+      "semantic_module_name": "stock-app.src.app.api.stock.quote.route",
+      "semantic_import_count": 0,
+      "semantic_symbol_count": 0,
+      "is_test_file": false,
+      "entrypoints": [],
+      "generic_fallback": true
+    },
+    {
+      "id": "file:stock-app/src/components/IndexHeader.tsx",
+      "type": "code",
+      "label": "stock-app/src/components/IndexHeader.tsx",
+      "size": 2105,
+      "mime": "application/octet-stream",
+      "language": "TypeScript (React)",
+      "semantic_adapter": "generic",
+      "semantic_package_identity": "stock-app.src.components.IndexHeader",
+      "semantic_module_name": "stock-app.src.components.IndexHeader",
+      "semantic_import_count": 0,
+      "semantic_symbol_count": 0,
+      "is_test_file": false,
+      "entrypoints": [],
+      "generic_fallback": true
+    },
+    {
+      "id": "file:stock-app/src/components/MarketAlarm.tsx",
+      "type": "code",
+      "label": "stock-app/src/components/MarketAlarm.tsx",
+      "size": 3907,
+      "mime": "application/octet-stream",
+      "language": "TypeScript (React)",
+      "semantic_adapter": "generic",
+      "semantic_package_identity": "stock-app.src.components.MarketAlarm",
+      "semantic_module_name": "stock-app.src.components.MarketAlarm",
+      "semantic_import_count": 0,
+      "semantic_symbol_count": 0,
+      "is_test_file": false,
+      "entrypoints": [],
+      "generic_fallback": true
+    },
+    {
+      "id": "file:stock-app/src/components/MarketSentiment.tsx",
+      "type": "code",
+      "label": "stock-app/src/components/MarketSentiment.tsx",
+      "size": 4191,
+      "mime": "application/octet-stream",
+      "language": "TypeScript (React)",
+      "semantic_adapter": "generic",
+      "semantic_package_identity": "stock-app.src.components.MarketSentiment",
+      "semantic_module_name": "stock-app.src.components.MarketSentiment",
+      "semantic_import_count": 0,
+      "semantic_symbol_count": 0,
+      "is_test_file": false,
+      "entrypoints": [],
+      "generic_fallback": true
+    },
+    {
+      "id": "file:stock-app/src/components/PositionCalculator.tsx",
+      "type": "code",
+      "label": "stock-app/src/components/PositionCalculator.tsx",
+      "size": 8775,
+      "mime": "application/octet-stream",
+      "language": "TypeScript (React)",
+      "semantic_adapter": "generic",
+      "semantic_package_identity": "stock-app.src.components.PositionCalculator",
+      "semantic_module_name": "stock-app.src.components.PositionCalculator",
+      "semantic_import_count": 0,
+      "semantic_symbol_count": 0,
+      "is_test_file": false,
+      "entrypoints": [],
+      "generic_fallback": true
+    },
+    {
+      "id": "file:stock-app/src/components/StockChart.tsx",
+      "type": "code",
+      "label": "stock-app/src/components/StockChart.tsx",
+      "size": 7147,
+      "mime": "application/octet-stream",
+      "language": "TypeScript (React)",
+      "semantic_adapter": "generic",
+      "semantic_package_identity": "stock-app.src.components.StockChart",
+      "semantic_module_name": "stock-app.src.components.StockChart",
+      "semantic_import_count": 0,
+      "semantic_symbol_count": 0,
+      "is_test_file": false,
+      "entrypoints": [],
+      "generic_fallback": true
+    },
+    {
+      "id": "file:stock-app/src/components/Watchlist.tsx",
+      "type": "code",
+      "label": "stock-app/src/components/Watchlist.tsx",
+      "size": 16877,
+      "mime": "application/octet-stream",
+      "language": "TypeScript (React)",
+      "semantic_adapter": "generic",
+      "semantic_package_identity": "stock-app.src.components.Watchlist",
+      "semantic_module_name": "stock-app.src.components.Watchlist",
+      "semantic_import_count": 0,
+      "semantic_symbol_count": 0,
+      "is_test_file": false,
+      "entrypoints": [],
+      "generic_fallback": true
+    },
+    {
+      "id": "file:stock-app/src/lib/constants.ts",
+      "type": "code",
+      "label": "stock-app/src/lib/constants.ts",
+      "size": 375,
+      "mime": "video/vnd.dlna.mpeg-tts",
+      "language": "TypeScript",
+      "semantic_adapter": "generic",
+      "semantic_package_identity": "stock-app.src.lib.constants",
+      "semantic_module_name": "stock-app.src.lib.constants",
+      "semantic_import_count": 0,
+      "semantic_symbol_count": 0,
+      "is_test_file": false,
+      "entrypoints": [],
+      "generic_fallback": true
+    },
+    {
+      "id": "module:fetch_data",
+      "type": "module",
+      "label": "fetch_data",
+      "language": "Python"
+    },
+    {
+      "id": "module:subprocess",
+      "type": "module",
+      "label": "subprocess",
+      "language": "Python"
+    },
+    {
+      "id": "module:json",
+      "type": "module",
+      "label": "json",
+      "language": "Python"
+    },
+    {
+      "id": "module:time",
+      "type": "module",
+      "label": "time",
+      "language": "Python"
+    },
+    {
+      "id": "module:signal",
+      "type": "module",
+      "label": "signal",
+      "language": "Python"
+    },
+    {
+      "id": "module:re",
+      "type": "module",
+      "label": "re",
+      "language": "Python"
+    },
+    {
+      "id": "module:datetime",
+      "type": "module",
+      "label": "datetime",
+      "language": "Python"
+    },
+    {
+      "id": "symbol:fetch_data.py:Timeout",
+      "type": "class",
+      "label": "Timeout",
+      "lineno": 12,
+      "signature": "class Timeout(Exception): pass",
+      "receiver": null,
+      "bases": [
+        "Exception"
+      ],
+      "entrypoint": false
+    },
+    {
+      "id": "symbol:fetch_data.py:timeout_handler",
+      "type": "function",
+      "label": "timeout_handler",
+      "lineno": 14,
+      "signature": "def timeout_handler(signum, frame): raise Timeout()",
+      "receiver": null,
+      "bases": [],
+      "entrypoint": false
+    },
+    {
+      "id": "symbol:fetch_data.py:curl",
+      "type": "function",
+      "label": "curl",
+      "lineno": 17,
+      "signature": "def curl(url, referer=\"\"):",
+      "receiver": null,
+      "bases": [],
+      "entrypoint": false
+    },
+    {
+      "id": "symbol:fetch_data.py:tf",
+      "type": "function",
+      "label": "tf",
+      "lineno": 26,
+      "signature": "def tf(v):",
+      "receiver": null,
+      "bases": [],
+      "entrypoint": false
+    },
+    {
+      "id": "symbol:fetch_data.py:fetch_index_sina",
+      "type": "function",
+      "label": "fetch_index_sina",
+      "lineno": 33,
+      "signature": "def fetch_index_sina(code, name):",
+      "receiver": null,
+      "bases": [],
+      "entrypoint": false
+    },
+    {
+      "id": "symbol:fetch_data.py:fetch_all",
+      "type": "function",
+      "label": "fetch_all",
+      "lineno": 57,
+      "signature": "def fetch_all():",
+      "receiver": null,
+      "bases": [],
+      "entrypoint": false
+    },
+    {
+      "id": "symbol:fetch_data.py:fetch_limit_up",
+      "type": "function",
+      "label": "fetch_limit_up",
+      "lineno": 125,
+      "signature": "def fetch_limit_up():",
+      "receiver": null,
+      "bases": [],
+      "entrypoint": false
+    },
+    {
+      "id": "symbol:fetch_data.py:fetch_limit_down",
+      "type": "function",
+      "label": "fetch_limit_down",
+      "lineno": 138,
+      "signature": "def fetch_limit_down():",
+      "receiver": null,
+      "bases": [],
+      "entrypoint": false
+    },
+    {
+      "id": "symbol:fetch_data.py:sync_to_stock_website",
+      "type": "function",
+      "label": "sync_to_stock_website",
+      "lineno": 150,
+      "signature": "def sync_to_stock_website(data):",
+      "receiver": null,
+      "bases": [],
+      "entrypoint": false
+    },
+    {
+      "id": "symbol:fetch_data.py:main",
+      "type": "function",
+      "label": "main",
+      "lineno": 173,
+      "signature": "def main():",
+      "receiver": null,
+      "bases": [],
+      "entrypoint": true
+    },
+    {
+      "id": "module:stock-app.next-env.d",
+      "type": "module",
+      "label": "stock-app.next-env.d",
+      "language": "TypeScript"
+    },
+    {
+      "id": "module:stock-app.next.config",
+      "type": "module",
+      "label": "stock-app.next.config",
+      "language": "TypeScript"
+    },
+    {
+      "id": "module:stock-app.scripts.update_data",
+      "type": "module",
+      "label": "stock-app.scripts.update_data",
+      "language": "JavaScript"
+    },
+    {
+      "id": "module:stock-app.src.app.api.market.stats.route",
+      "type": "module",
+      "label": "stock-app.src.app.api.market.stats.route",
+      "language": "TypeScript"
+    },
+    {
+      "id": "module:stock-app.src.app.api.stock.announcements.route",
+      "type": "module",
+      "label": "stock-app.src.app.api.stock.announcements.route",
+      "language": "TypeScript"
+    },
+    {
+      "id": "module:stock-app.src.app.api.stock.kline.route",
+      "type": "module",
+      "label": "stock-app.src.app.api.stock.kline.route",
+      "language": "TypeScript"
+    },
+    {
+      "id": "module:stock-app.src.app.api.stock.quote.route",
+      "type": "module",
+      "label": "stock-app.src.app.api.stock.quote.route",
+      "language": "TypeScript"
+    },
+    {
+      "id": "module:stock-app.src.app.layout",
+      "type": "module",
+      "label": "stock-app.src.app.layout",
+      "language": "TypeScript (React)"
+    },
+    {
+      "id": "module:stock-app.src.app.page",
+      "type": "module",
+      "label": "stock-app.src.app.page",
+      "language": "TypeScript (React)"
+    },
+    {
+      "id": "module:stock-app.src.components.IndexHeader",
+      "type": "module",
+      "label": "stock-app.src.components.IndexHeader",
+      "language": "TypeScript (React)"
+    },
+    {
+      "id": "module:stock-app.src.components.MarketAlarm",
+      "type": "module",
+      "label": "stock-app.src.components.MarketAlarm",
+      "language": "TypeScript (React)"
+    },
+    {
+      "id": "module:stock-app.src.components.MarketSentiment",
+      "type": "module",
+      "label": "stock-app.src.components.MarketSentiment",
+      "language": "TypeScript (React)"
+    },
+    {
+      "id": "module:stock-app.src.components.PositionCalculator",
+      "type": "module",
+      "label": "stock-app.src.components.PositionCalculator",
+      "language": "TypeScript (React)"
+    },
+    {
+      "id": "module:stock-app.src.components.StockChart",
+      "type": "module",
+      "label": "stock-app.src.components.StockChart",
+      "language": "TypeScript (React)"
+    },
+    {
+      "id": "module:stock-app.src.components.Watchlist",
+      "type": "module",
+      "label": "stock-app.src.components.Watchlist",
+      "language": "TypeScript (React)"
+    },
+    {
+      "id": "module:stock-app.src.lib.constants",
+      "type": "module",
+      "label": "stock-app.src.lib.constants",
+      "language": "TypeScript"
+    }
+  ],
+  "edges": [
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "language:typescript_(react)",
+      "type": "uses_language"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "language:typescript",
+      "type": "uses_language"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "language:markdown",
+      "type": "uses_language"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "language:json",
+      "type": "uses_language"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "language:python",
+      "type": "uses_language"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "language:toml",
+      "type": "uses_language"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "language:javascript",
+      "type": "uses_language"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "language:css",
+      "type": "uses_language"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "framework:github_actions",
+      "type": "uses_framework"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "dir:artifacts",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "dir:stock-app",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:.clinerules",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:.cursorrules",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:.env",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:.gitignore",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:.windsurfrules",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:AGENTS.md",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:CLAUDE.md",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:CONTEXT.md",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:fetch_data.py",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:netlify.toml",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:artifacts/.gitkeep",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:artifacts/logs/.gitkeep",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/.gitignore",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/eslint.config.mjs",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/next-env.d.ts",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/next.config.ts",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/package-lock.json",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/package.json",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/postcss.config.mjs",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/README.md",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/tsconfig.json",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/public/file.svg",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/public/globe.svg",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/public/next.svg",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/public/vercel.svg",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/public/window.svg",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/public/data/market.json",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/scripts/update_data.js",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/src/app/favicon.ico",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/src/app/globals.css",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/src/app/layout.tsx",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/src/app/page.tsx",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/src/app/api/market/stats/route.ts",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/src/app/api/stock/announcements/route.ts",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/src/app/api/stock/kline/route.ts",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/src/app/api/stock/quote/route.ts",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/src/components/IndexHeader.tsx",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/src/components/MarketAlarm.tsx",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/src/components/MarketSentiment.tsx",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/src/components/PositionCalculator.tsx",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/src/components/StockChart.tsx",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/src/components/Watchlist.tsx",
+      "type": "contains"
+    },
+    {
+      "from": "workspace:C:\\Users\\SJX\\Desktop\\股票网站\\antigravity-stock-main",
+      "to": "file:stock-app/src/lib/constants.ts",
+      "type": "contains"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "module:fetch_data",
+      "type": "declares_package"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "module:subprocess",
+      "type": "imports"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "module:json",
+      "type": "imports"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "module:time",
+      "type": "imports"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "module:signal",
+      "type": "imports"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "module:re",
+      "type": "imports"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "module:datetime",
+      "type": "imports"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "symbol:fetch_data.py:Timeout",
+      "type": "defines"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "symbol:fetch_data.py:timeout_handler",
+      "type": "defines"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "symbol:fetch_data.py:curl",
+      "type": "defines"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "symbol:fetch_data.py:tf",
+      "type": "defines"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "symbol:fetch_data.py:fetch_index_sina",
+      "type": "defines"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "symbol:fetch_data.py:fetch_all",
+      "type": "defines"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "symbol:fetch_data.py:fetch_limit_up",
+      "type": "defines"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "symbol:fetch_data.py:fetch_limit_down",
+      "type": "defines"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "symbol:fetch_data.py:sync_to_stock_website",
+      "type": "defines"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "symbol:fetch_data.py:main",
+      "type": "defines"
+    },
+    {
+      "from": "file:fetch_data.py",
+      "to": "symbol:fetch_data.py:main",
+      "type": "entrypoint"
+    },
+    {
+      "from": "file:stock-app/next-env.d.ts",
+      "to": "module:stock-app.next-env.d",
+      "type": "declares_package"
+    },
+    {
+      "from": "file:stock-app/next.config.ts",
+      "to": "module:stock-app.next.config",
+      "type": "declares_package"
+    },
+    {
+      "from": "file:stock-app/scripts/update_data.js",
+      "to": "module:stock-app.scripts.update_data",
+      "type": "declares_package"
+    },
+    {
+      "from": "file:stock-app/src/app/api/market/stats/route.ts",
+      "to": "module:stock-app.src.app.api.market.stats.route",
+      "type": "declares_package"
+    },
+    {
+      "from": "file:stock-app/src/app/api/stock/announcements/route.ts",
+      "to": "module:stock-app.src.app.api.stock.announcements.route",
+      "type": "declares_package"
+    },
+    {
+      "from": "file:stock-app/src/app/api/stock/kline/route.ts",
+      "to": "module:stock-app.src.app.api.stock.kline.route",
+      "type": "declares_package"
+    },
+    {
+      "from": "file:stock-app/src/app/api/stock/quote/route.ts",
+      "to": "module:stock-app.src.app.api.stock.quote.route",
+      "type": "declares_package"
+    },
+    {
+      "from": "file:stock-app/src/app/layout.tsx",
+      "to": "module:stock-app.src.app.layout",
+      "type": "declares_package"
+    },
+    {
+      "from": "file:stock-app/src/app/page.tsx",
+      "to": "module:stock-app.src.app.page",
+      "type": "declares_package"
+    },
+    {
+      "from": "file:stock-app/src/components/IndexHeader.tsx",
+      "to": "module:stock-app.src.components.IndexHeader",
+      "type": "declares_package"
+    },
+    {
+      "from": "file:stock-app/src/components/MarketAlarm.tsx",
+      "to": "module:stock-app.src.components.MarketAlarm",
+      "type": "declares_package"
+    },
+    {
+      "from": "file:stock-app/src/components/MarketSentiment.tsx",
+      "to": "module:stock-app.src.components.MarketSentiment",
+      "type": "declares_package"
+    },
+    {
+      "from": "file:stock-app/src/components/PositionCalculator.tsx",
+      "to": "module:stock-app.src.components.PositionCalculator",
+      "type": "declares_package"
+    },
+    {
+      "from": "file:stock-app/src/components/StockChart.tsx",
+      "to": "module:stock-app.src.components.StockChart",
+      "type": "declares_package"
+    },
+    {
+      "from": "file:stock-app/src/components/Watchlist.tsx",
+      "to": "module:stock-app.src.components.Watchlist",
+      "type": "declares_package"
+    },
+    {
+      "from": "file:stock-app/src/lib/constants.ts",
+      "to": "module:stock-app.src.lib.constants",
+      "type": "declares_package"
+    }
+  ]
+}

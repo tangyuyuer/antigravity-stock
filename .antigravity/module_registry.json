@@ -1,0 +1,64 @@
+[
+  {
+    "module": "__workspace_root__",
+    "keywords": [
+      "workspace",
+      "root",
+      "fetch_data"
+    ],
+    "top_paths": [
+      "fetch_data.py"
+    ],
+    "status": "partial",
+    "summary": "workspace root"
+  },
+  {
+    "module": "stock-app_app",
+    "keywords": [
+      "stock",
+      "app",
+      "app"
+    ],
+    "top_paths": [
+      "api\\market\\stats\\route.ts",
+      "api\\stock\\announcements\\route.ts",
+      "api\\stock\\kline\\route.ts",
+      "api\\stock\\quote\\route.ts",
+      "layout.tsx",
+      "page.tsx"
+    ],
+    "status": "partial",
+    "summary": "stock-app app"
+  },
+  {
+    "module": "stock-app_components",
+    "keywords": [
+      "stock",
+      "app",
+      "components"
+    ],
+    "top_paths": [
+      "IndexHeader.tsx",
+      "MarketAlarm.tsx",
+      "MarketSentiment.tsx",
+      "PositionCalculator.tsx",
+      "StockChart.tsx",
+      "Watchlist.tsx"
+    ],
+    "status": "partial",
+    "summary": "stock-app components"
+  },
+  {
+    "module": "stock-app_lib",
+    "keywords": [
+      "stock",
+      "app",
+      "lib"
+    ],
+    "top_paths": [
+      "constants.ts"
+    ],
+    "status": "partial",
+    "summary": "stock-app lib"
+  }
+]
