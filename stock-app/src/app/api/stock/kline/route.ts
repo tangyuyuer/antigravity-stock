@@ -27,41 +27,71 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    let scale = '240';
-    let datalen = '300';
-    if (type === 'minute') { scale = '5'; datalen = '240'; }
-    if (type === 'week') { scale = '240'; datalen = '100'; } // fallback to daily for now since sina weekly scale might be unstable
-    if (type === 'month') { scale = '240'; datalen = '100'; } // fallback to daily
-
-    // Sina K-line API
-    const url = `http://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${symbol}&scale=${scale}&ma=no&datalen=${datalen}`;
-    
-    const response = await axios.get(url, {
-      headers: {
-        'Referer': 'https://finance.sina.com.cn/',
-        'User-Agent': 'Mozilla/5.0',
-      },
-      timeout: 5000,
-    });
-
-    const data = response.data;
-    if (!Array.isArray(data)) {
-      return NextResponse.json({ error: 'Invalid data format' }, { status: 500 });
-    }
-
-    // Transform to lightweight-charts format
-    let result;
     if (type === 'minute') {
-      result = data.map((item: any) => {
-        const localDate = new Date(item.day); // Format "2024-05-10 10:30:00"
-        return {
-          time: Math.floor(localDate.getTime() / 1000) + 28800, // adjust for timezone if needed, simple mapping for now
-          price: parseFloat(item.close),
-          volume: parseFloat(item.volume),
-        };
-      });
+      // Tencent minute API
+      const url = `http://web.ifzq.gtimg.cn/appstock/app/minute/query?code=${symbol}`;
+      const response = await axios.get(url, { timeout: 5000 });
+      const resData = response.data?.data?.[symbol]?.data;
+      if (!resData || !resData.data) {
+        return NextResponse.json([]);
+      }
+      
+      const dateStr = resData.date; // "20260429"
+      const yyyy = dateStr.substring(0, 4);
+      const mm = dateStr.substring(4, 6);
+      const dd = dateStr.substring(6, 8);
+      
+      const lines = resData.data; // array of "0930 4061.82 6345575 10295..."
+      const result = [];
+      let prevCumVol = 0;
+      
+      for (let i = 0; i < lines.length; i++) {
+        const parts = lines[i].split(' ');
+        if (parts.length < 3) continue;
+        
+        const timeStr = parts[0]; // "0930"
+        const hh = timeStr.substring(0, 2);
+        const min = timeStr.substring(2, 4);
+        
+        const price = parseFloat(parts[1]);
+        const cumVol = parseInt(parts[2], 10);
+        let vol = cumVol;
+        if (i > 0) {
+          vol = Math.max(0, cumVol - prevCumVol);
+        }
+        prevCumVol = cumVol;
+        
+        // Use +08:00 to specify Beijing time correctly
+        const timestamp = Math.floor(new Date(`${yyyy}-${mm}-${dd}T${hh}:${min}:00+08:00`).getTime() / 1000);
+        
+        result.push({
+          time: timestamp,
+          price: price,
+          volume: vol
+        });
+      }
+      
+      cache[cacheKey] = { data: result, timestamp: Date.now() };
+      return NextResponse.json(result);
+
     } else {
-      result = data.map((item: any) => ({
+      // Sina K-line API for day, week, month
+      let scale = '240';
+      let datalen = '300';
+      if (type === 'week') { scale = '240'; datalen = '100'; } // fallback to daily
+      if (type === 'month') { scale = '240'; datalen = '100'; } // fallback to daily
+
+      const url = `http://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${symbol}&scale=${scale}&ma=no&datalen=${datalen}`;
+      
+      const response = await axios.get(url, {
+        headers: { 'Referer': 'https://finance.sina.com.cn/' },
+        timeout: 5000,
+      });
+
+      let data = response.data;
+      if (!Array.isArray(data)) return NextResponse.json([]);
+
+      let result = data.map((item: any) => ({
         time: item.day.includes(' ') ? item.day.split(' ')[0] : item.day,
         open: parseFloat(item.open),
         high: parseFloat(item.high),
@@ -69,7 +99,6 @@ export async function GET(request: NextRequest) {
         close: parseFloat(item.close),
         volume: parseFloat(item.volume),
       }));
-    }
 
     // Fetch real-time quote to append today's data if scale is 240 (daily)
     if (scale === '240' && result.length > 0) {
@@ -114,10 +143,11 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Update cache
-    cache[cacheKey] = { data: result, timestamp: Date.now() };
-
-    return NextResponse.json(result);
+      // Update cache
+      cache[cacheKey] = { data: result, timestamp: Date.now() };
+  
+      return NextResponse.json(result);
+    }
   } catch (error: any) {
     console.error('K-line API Error:', error.message);
     return NextResponse.json({ error: 'Failed to fetch kline data' }, { status: 500 });
