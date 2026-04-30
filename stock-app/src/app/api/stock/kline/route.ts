@@ -11,15 +11,14 @@ const CACHE_TTL = 10000; // 10 seconds
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const symbol = searchParams.get('symbol'); // e.g. sh000001
-  const scale = searchParams.get('scale') || '240'; // 240 is daily
-  const datalen = searchParams.get('datalen') || '240';
+  const type = searchParams.get('type') || 'day';
 
   if (!symbol) {
     return NextResponse.json({ error: 'Missing symbol parameter' }, { status: 400 });
   }
 
   // Check cache
-  const cacheKey = `${symbol}_${scale}_${datalen}`;
+  const cacheKey = `${symbol}_${type}`;
   const cached = cache[cacheKey];
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     return NextResponse.json(cached.data, {
@@ -28,6 +27,12 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    let scale = '240';
+    let datalen = '300';
+    if (type === 'minute') { scale = '5'; datalen = '240'; }
+    if (type === 'week') { scale = '240'; datalen = '100'; } // fallback to daily for now since sina weekly scale might be unstable
+    if (type === 'month') { scale = '240'; datalen = '100'; } // fallback to daily
+
     // Sina K-line API
     const url = `http://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${symbol}&scale=${scale}&ma=no&datalen=${datalen}`;
     
@@ -45,14 +50,26 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform to lightweight-charts format
-    let result = data.map((item: any) => ({
-      time: item.day.includes(' ') ? item.day.split(' ')[0] : item.day,
-      open: parseFloat(item.open),
-      high: parseFloat(item.high),
-      low: parseFloat(item.low),
-      close: parseFloat(item.close),
-      volume: parseFloat(item.volume),
-    }));
+    let result;
+    if (type === 'minute') {
+      result = data.map((item: any) => {
+        const localDate = new Date(item.day); // Format "2024-05-10 10:30:00"
+        return {
+          time: Math.floor(localDate.getTime() / 1000) + 28800, // adjust for timezone if needed, simple mapping for now
+          price: parseFloat(item.close),
+          volume: parseFloat(item.volume),
+        };
+      });
+    } else {
+      result = data.map((item: any) => ({
+        time: item.day.includes(' ') ? item.day.split(' ')[0] : item.day,
+        open: parseFloat(item.open),
+        high: parseFloat(item.high),
+        low: parseFloat(item.low),
+        close: parseFloat(item.close),
+        volume: parseFloat(item.volume),
+      }));
+    }
 
     // Fetch real-time quote to append today's data if scale is 240 (daily)
     if (scale === '240' && result.length > 0) {
