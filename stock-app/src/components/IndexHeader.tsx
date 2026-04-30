@@ -11,8 +11,11 @@ interface IndexData {
   change: string;
   pct: string;
 }
+interface IndexHeaderProps {
+  onSelect?: (stock: { code: string; name: string }) => void;
+}
 
-export const IndexHeader: React.FC = () => {
+export const IndexHeader: React.FC<IndexHeaderProps> = ({ onSelect }) => {
   const [data, setData] = useState<IndexData[]>([]);
 
   const fetchIndices = async () => {
@@ -49,7 +52,8 @@ export const IndexHeader: React.FC = () => {
             key={idx.code}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass p-3 rounded-2xl flex flex-col items-center justify-center transition-all hover:border-white/10"
+            onClick={() => onSelect?.({ code: idx.code, name: getDisplayName(idx.code, idx.name) })}
+            className="glass p-3 rounded-2xl flex flex-col items-center justify-center transition-all hover:border-white/20 hover:bg-white/5 cursor-pointer"
           >
             <span className="text-gray-400 text-xs font-medium mb-0.5">
               {getDisplayName(idx.code, idx.name)}

@@ -46,7 +46,7 @@ export default function Home() {
         </div>
 
         {/* Top Indices Dashboard */}
-        <IndexHeader />
+        <IndexHeader onSelect={(stock) => setSelectedStock(stock)} />
 
         {/* Market Sentiment (Thermometer) */}
         <MarketSentiment />
