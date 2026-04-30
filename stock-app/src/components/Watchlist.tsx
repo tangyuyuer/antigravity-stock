@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Plus, Trash2, TrendingUp, TrendingDown, GripVertical } from 'lucide-react';
 import { Reorder } from 'framer-motion';
+import { supabase } from '../lib/supabaseClient';
 
 interface StockQuote {
   code: string;
@@ -42,20 +43,40 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
   const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
-    const savedCodes = localStorage.getItem('watchlist');
-    const savedPositions = localStorage.getItem('positions');
+    const fetchCloudData = async () => {
+      try {
+        const { data: watchData } = await supabase.from('watchlist').select('symbol');
+        if (watchData && watchData.length > 0) {
+          setCodes(watchData.map(d => d.symbol));
+        } else {
+          setCodes(['sh600000', 'sz000001']);
+        }
+
+        const { data: posData } = await supabase.from('positions').select('*');
+        if (posData) {
+          const newPositions: Record<string, Position> = {};
+          posData.forEach(row => {
+            newPositions[row.symbol] = {
+              code: row.symbol,
+              cost: row.buyPrice ? row.buyPrice.toString() : '',
+              amount: row.quantity ? row.quantity.toString() : ''
+            };
+          });
+          setPositions(newPositions);
+        }
+      } catch (e) {
+        console.error('Error fetching cloud data', e);
+        setCodes(['sh600000', 'sz000001']);
+      }
+    };
+    
+    fetchCloudData();
+
     const savedReadAnn = localStorage.getItem('read_announcements');
-    
-    if (savedCodes) setCodes(JSON.parse(savedCodes));
-    else setCodes(['sh600000', 'sz000001']);
-    
-    if (savedPositions) setPositions(JSON.parse(savedPositions));
     if (savedReadAnn) setReadAnnouncements(JSON.parse(savedReadAnn));
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('watchlist', JSON.stringify(codes));
-    localStorage.setItem('positions', JSON.stringify(positions));
     localStorage.setItem('read_announcements', JSON.stringify(readAnnouncements));
     fetchQuotes();
     fetchAnnouncements();
@@ -114,33 +135,68 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
     }
   };
 
-  const updatePosition = (code: string, field: 'cost' | 'amount', value: string) => {
-    setPositions(prev => ({
-      ...prev,
-      [code]: {
-        ...(prev[code] || { code, cost: '', amount: '' }),
-        [field]: value
+  const updatePosition = async (code: string, field: 'cost' | 'amount', value: string) => {
+    setPositions(prev => {
+      const current = prev[code] || { code, cost: '', amount: '' };
+      const next = { ...current, [field]: value };
+      return { ...prev, [code]: next };
+    });
+
+    const quote = quotes.find(q => q.code === code);
+    const name = quote?.name || '';
+    const type = code.startsWith('sh') ? 'sh' : (code.startsWith('sz') ? 'sz' : 'us');
+
+    const currentPos = positions[code] || { cost: '', amount: '' };
+    const finalCost = field === 'cost' ? value : currentPos.cost;
+    const finalAmount = field === 'amount' ? value : currentPos.amount;
+
+    try {
+      await supabase.from('positions').delete().match({ symbol: code });
+      if (finalCost || finalAmount) {
+         await supabase.from('positions').insert({
+           symbol: code,
+           name: name,
+           buyPrice: finalCost ? parseFloat(finalCost) : null,
+           quantity: finalAmount ? parseInt(finalAmount, 10) : null,
+           type: type
+         });
       }
-    }));
+    } catch(e) {
+      console.error('Error syncing position', e);
+    }
   };
 
-  const addStock = () => {
+  const addStock = async () => {
     if (!inputValue) return;
     let code = inputValue.toLowerCase();
     if (!code.startsWith('sh') && !code.startsWith('sz')) {
       code = (code.startsWith('6') ? 'sh' : 'sz') + code;
     }
     if (!codes.includes(code)) {
-      setCodes([...codes, code]);
+      setCodes(prev => [...prev, code]);
+      try {
+         await supabase.from('watchlist').insert({ symbol: code });
+      } catch(e) {
+         console.error('Error adding to watchlist', e);
+      }
     }
     setInputValue('');
   };
 
-  const removeStock = (code: string) => {
-    setCodes(codes.filter(c => c !== code));
-    const newPositions = { ...positions };
-    delete newPositions[code];
-    setPositions(newPositions);
+  const removeStock = async (code: string) => {
+    setCodes(prev => prev.filter(c => c !== code));
+    setPositions(prev => {
+      const newPositions = { ...prev };
+      delete newPositions[code];
+      return newPositions;
+    });
+
+    try {
+      await supabase.from('watchlist').delete().match({ symbol: code });
+      await supabase.from('positions').delete().match({ symbol: code });
+    } catch(e) {
+      console.error('Error removing stock', e);
+    }
   };
 
   const totalProfit = quotes.reduce((acc, s) => {

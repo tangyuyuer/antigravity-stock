@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { createChart, ColorType, IChartApi, ISeriesApi, CandlestickSeries, createSeriesMarkers } from 'lightweight-charts';
+import { supabase } from '../lib/supabaseClient';
 
 interface ChartProps {
   symbol: string; // e.g. sh600000
@@ -17,19 +18,27 @@ export const StockChart: React.FC<ChartProps> = ({ symbol, name }) => {
   const [markers, setMarkers] = useState<Record<string, 'buy' | 'sell'>>({});
   const [klineData, setKlineData] = useState<any[]>([]);
 
-  // Load saved markers when symbol changes
+  // Load saved markers from Supabase when symbol changes
   useEffect(() => {
-    const saved = localStorage.getItem(`markers_${symbol}`);
-    if (saved) {
-      try { 
-        const parsed = JSON.parse(saved);
-        setMarkers(parsed && typeof parsed === 'object' ? parsed : {}); 
-      } catch (e) { 
-        setMarkers({}); 
+    const fetchMarkers = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('markers')
+          .select('time, type')
+          .eq('symbol', symbol);
+        
+        if (error) throw error;
+        
+        const newMarkers: Record<string, 'buy' | 'sell'> = {};
+        data?.forEach(row => {
+          newMarkers[row.time] = row.type as 'buy' | 'sell';
+        });
+        setMarkers(newMarkers);
+      } catch (err) {
+        console.error('Error fetching markers from Supabase:', err);
       }
-    } else {
-      setMarkers({});
-    }
+    };
+    fetchMarkers();
   }, [symbol]);
 
   useEffect(() => {
@@ -104,11 +113,30 @@ export const StockChart: React.FC<ChartProps> = ({ symbol, name }) => {
 
       setMarkers(prev => {
         const newMarkers = { ...prev };
-        if (!newMarkers[timeStr]) newMarkers[timeStr] = 'buy';
-        else if (newMarkers[timeStr] === 'buy') newMarkers[timeStr] = 'sell';
+        const currentType = newMarkers[timeStr];
+        let newType: 'buy' | 'sell' | null = null;
+        
+        if (!currentType) newType = 'buy';
+        else if (currentType === 'buy') newType = 'sell';
+        else newType = null;
+        
+        if (newType) newMarkers[timeStr] = newType;
         else delete newMarkers[timeStr];
         
-        localStorage.setItem(`markers_${symbol}`, JSON.stringify(newMarkers));
+        // Sync to Supabase asynchronously
+        (async () => {
+          try {
+            if (newType) {
+              await supabase.from('markers').delete().match({ symbol, time: timeStr });
+              await supabase.from('markers').insert({ symbol, time: timeStr, type: newType });
+            } else {
+              await supabase.from('markers').delete().match({ symbol, time: timeStr });
+            }
+          } catch (e) {
+            console.error('Error syncing marker to Supabase', e);
+          }
+        })();
+
         return newMarkers;
       });
     };
