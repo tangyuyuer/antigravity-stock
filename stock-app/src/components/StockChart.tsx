@@ -134,7 +134,7 @@ export const StockChart: React.FC<ChartProps> = ({ symbol, name }) => {
         chartMarkers.push({
           time: item.time,
           position: safeMarkers[item.time] === 'buy' ? 'belowBar' : 'aboveBar',
-          color: safeMarkers[item.time] === 'buy' ? '#ef4444' : '#22c55e',
+          color: safeMarkers[item.time] === 'buy' ? '#22d3ee' : '#f97316',
           shape: safeMarkers[item.time] === 'buy' ? 'arrowUp' : 'arrowDown',
           text: safeMarkers[item.time] === 'buy' ? '买' : '卖',
           size: 1,
