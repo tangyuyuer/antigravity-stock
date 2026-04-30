@@ -45,6 +45,7 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
   const positionsRef = useRef(positions);
   const quotesRef = useRef(quotes);
   const syncTimeoutsRef = useRef<Record<string, NodeJS.Timeout>>({});
+  const syncPromisesRef = useRef<Record<string, Promise<any>>>({});
 
   useEffect(() => { positionsRef.current = positions; }, [positions]);
   useEffect(() => { quotesRef.current = quotes; }, [quotes]);
@@ -156,27 +157,32 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
     }
 
     // Debounce the Supabase sync
-    syncTimeoutsRef.current[code] = setTimeout(async () => {
+    syncTimeoutsRef.current[code] = setTimeout(() => {
       const quote = quotesRef.current.find(q => q.code === code);
       const name = quote?.name || '';
       const type = code.startsWith('sh') ? 'sh' : (code.startsWith('sz') ? 'sz' : 'us');
       
       const currentPos = positionsRef.current[code] || { cost: '', amount: '' };
 
-      try {
-        await supabase.from('positions').delete().match({ symbol: code });
-        if (currentPos.cost || currentPos.amount) {
-           await supabase.from('positions').insert({
-             symbol: code,
-             name: name,
-             buyPrice: currentPos.cost ? parseFloat(currentPos.cost) : null,
-             quantity: currentPos.amount ? parseInt(currentPos.amount, 10) : null,
-             type: type
-           });
+      const doSync = async () => {
+        try {
+          await supabase.from('positions').delete().match({ symbol: code });
+          if (currentPos.cost || currentPos.amount) {
+             await supabase.from('positions').insert({
+               symbol: code,
+               name: name,
+               buyPrice: currentPos.cost ? parseFloat(currentPos.cost) : null,
+               quantity: currentPos.amount ? parseInt(currentPos.amount, 10) : null,
+               type: type
+             });
+          }
+        } catch(e) {
+          console.error('Error syncing position', e);
         }
-      } catch(e) {
-        console.error('Error syncing position', e);
-      }
+      };
+
+      const prevPromise = syncPromisesRef.current[code] || Promise.resolve();
+      syncPromisesRef.current[code] = prevPromise.then(doSync).catch(() => {});
     }, 500);
   };
 
