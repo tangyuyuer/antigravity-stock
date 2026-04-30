@@ -42,6 +42,13 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
   const [readAnnouncements, setReadAnnouncements] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState('');
 
+  const positionsRef = useRef(positions);
+  const quotesRef = useRef(quotes);
+  const syncTimeoutsRef = useRef<Record<string, NodeJS.Timeout>>({});
+
+  useEffect(() => { positionsRef.current = positions; }, [positions]);
+  useEffect(() => { quotesRef.current = quotes; }, [quotes]);
+
   useEffect(() => {
     const fetchCloudData = async () => {
       try {
@@ -135,35 +142,42 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
     }
   };
 
-  const updatePosition = async (code: string, field: 'cost' | 'amount', value: string) => {
+  const updatePosition = (code: string, field: 'cost' | 'amount', value: string) => {
+    // Optimistic UI update
     setPositions(prev => {
       const current = prev[code] || { code, cost: '', amount: '' };
       const next = { ...current, [field]: value };
       return { ...prev, [code]: next };
     });
 
-    const quote = quotes.find(q => q.code === code);
-    const name = quote?.name || '';
-    const type = code.startsWith('sh') ? 'sh' : (code.startsWith('sz') ? 'sz' : 'us');
-
-    const currentPos = positions[code] || { cost: '', amount: '' };
-    const finalCost = field === 'cost' ? value : currentPos.cost;
-    const finalAmount = field === 'amount' ? value : currentPos.amount;
-
-    try {
-      await supabase.from('positions').delete().match({ symbol: code });
-      if (finalCost || finalAmount) {
-         await supabase.from('positions').insert({
-           symbol: code,
-           name: name,
-           buyPrice: finalCost ? parseFloat(finalCost) : null,
-           quantity: finalAmount ? parseInt(finalAmount, 10) : null,
-           type: type
-         });
-      }
-    } catch(e) {
-      console.error('Error syncing position', e);
+    // Clear previous timeout
+    if (syncTimeoutsRef.current[code]) {
+      clearTimeout(syncTimeoutsRef.current[code]);
     }
+
+    // Debounce the Supabase sync
+    syncTimeoutsRef.current[code] = setTimeout(async () => {
+      const quote = quotesRef.current.find(q => q.code === code);
+      const name = quote?.name || '';
+      const type = code.startsWith('sh') ? 'sh' : (code.startsWith('sz') ? 'sz' : 'us');
+      
+      const currentPos = positionsRef.current[code] || { cost: '', amount: '' };
+
+      try {
+        await supabase.from('positions').delete().match({ symbol: code });
+        if (currentPos.cost || currentPos.amount) {
+           await supabase.from('positions').insert({
+             symbol: code,
+             name: name,
+             buyPrice: currentPos.cost ? parseFloat(currentPos.cost) : null,
+             quantity: currentPos.amount ? parseInt(currentPos.amount, 10) : null,
+             type: type
+           });
+        }
+      } catch(e) {
+        console.error('Error syncing position', e);
+      }
+    }, 500);
   };
 
   const addStock = async () => {
