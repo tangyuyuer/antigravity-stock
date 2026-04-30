@@ -1,82 +1,87 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import axios from 'axios';
+import iconv from 'iconv-lite';
 
 export const dynamic = 'force-dynamic';
-const TDX_API = 'http://localhost:8080';
 
-const MANDATORY_NAMES: Record<string, string> = {
-  'sh000001': '上证指数',
-  'sz399001': '深证成指',
-  'sz399006': '创业板指',
-  'sh000300': '沪深300',
-  'sh000852': '中证1000',
-};
-
-const nameCache: Record<string, string> = { ...MANDATORY_NAMES };
-
-async function getStockName(fullCode: string): Promise<string> {
-  const codeLower = fullCode.toLowerCase();
-  if (MANDATORY_NAMES[codeLower]) return MANDATORY_NAMES[codeLower];
-  if (nameCache[codeLower]) return nameCache[codeLower];
-  try {
-    const pureCode = codeLower.replace(/^(sh|sz|bj)/i, '');
-    const res = await fetch(`${TDX_API}/api/search?keyword=${pureCode}`);
-    const json = await res.json();
-    const list = json.data?.list || json.data || [];
-    const found = list.find((item: any) => item.code === pureCode);
-    if (found?.name) {
-      nameCache[codeLower] = found.name;
-      return found.name;
-    }
-  } catch (e) {}
-  return fullCode.toUpperCase();
-}
+// Simple in-memory cache
+const cache: Record<string, { data: any, timestamp: number }> = {};
+const CACHE_TTL = 3000; // 3 seconds
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const codesParam = searchParams.get('codes');
-  if (!codesParam) return NextResponse.json([]);
+  const codes = searchParams.get('codes');
+
+  if (!codes) {
+    return NextResponse.json({ error: 'Missing codes parameter' }, { status: 400 });
+  }
+
+  // Check cache
+  const cacheKey = codes;
+  const cached = cache[cacheKey];
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return NextResponse.json(cached.data, {
+      headers: { 'X-Cache': 'HIT' }
+    });
+  }
 
   try {
-    const processedCodes = codesParam.split(',').map(c => {
-      let code = c.trim().toLowerCase();
-      if (/^\d{6}$/.test(code)) {
-        if (code.startsWith('6')) code = 'sh' + code;
-        else if (code.startsWith('0') || code.startsWith('3')) code = 'sz' + code;
-        else if (code.startsWith('4') || code.startsWith('8')) code = 'bj' + code;
+    const url = `http://hq.sinajs.cn/list=${codes}`;
+    const response = await axios.get(url, {
+      responseType: 'arraybuffer',
+      headers: {
+        'Referer': 'https://finance.sina.com.cn/',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+      },
+      timeout: 5000,
+    });
+
+    const data = iconv.decode(Buffer.from(response.data), 'GBK');
+    const lines = data.split('\n').filter(l => l.trim());
+    
+    const result = lines.map(line => {
+      const match = line.match(/hq_str_(.+?)="(.+?)"/);
+      if (!match) return null;
+      
+      const [full, code, content] = match;
+      const fields = content.split(',');
+      if (fields.length < 10) return null;
+
+      const open = parseFloat(fields[1]);
+      const prevClose = parseFloat(fields[2]);
+      let price = parseFloat(fields[3]);
+
+      // Handle call auction or pre-market where current price (fields[3]) is 0
+      if (price === 0) {
+        price = open > 0 ? open : prevClose;
       }
-      return code;
-    }).join(',');
 
-    const response = await fetch(`${TDX_API}/api/quote?code=${processedCodes}`);
-    const json = await response.json();
-    if (json.code !== 0 || !Array.isArray(json.data)) return NextResponse.json([]);
-
-    const result = await Promise.all(json.data.map(async (q: any) => {
-      let ex = q.Exchange === 1 ? 'sh' : (q.Exchange === 0 ? 'sz' : 'bj');
-      const code = `${ex}${q.Code}`;
-      const name = await getStockName(code);
-
-      // 核心修复：如果还没开盘(Close为0)，则使用昨收价Last
-      const last = (q.K?.Last || 0) / 1000;
-      let close = (q.K?.Close || 0) / 1000;
-      if (close === 0) close = last; 
-
-      const open = (q.K?.Open || 0) / 1000;
-      const high = (q.K?.High || 0) / 1000;
-      const low = (q.K?.Low || 0) / 1000;
-
-      const change = close - last;
-      const pct = last !== 0 ? (change / last) * 100 : 0;
+      const change = price - prevClose;
+      const pctChange = prevClose !== 0 ? (change / prevClose) * 100 : 0;
 
       return {
-        code, name, price: close.toFixed(2), change: change.toFixed(2), pct: pct.toFixed(2),
-        open: open.toFixed(2), prevClose: last.toFixed(2), high: high.toFixed(2), low: low.toFixed(2),
-        volume: String(q.TotalHand || 0), amount: String(q.Amount || 0),
+        code,
+        name: fields[0],
+        price: price.toFixed(2),
+        change: change.toFixed(2),
+        pct: pctChange.toFixed(2),
+        open: fields[1],
+        prevClose: fields[2],
+        high: fields[4],
+        low: fields[5],
+        volume: fields[8],
+        amount: fields[9],
+        time: fields[31],
       };
-    }));
+    }).filter(Boolean);
+
+    // Update cache
+    cache[cacheKey] = { data: result, timestamp: Date.now() };
 
     return NextResponse.json(result);
-  } catch (error) {
-    return NextResponse.json([]);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('API Error:', errorMessage);
+    return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
   }
 }
