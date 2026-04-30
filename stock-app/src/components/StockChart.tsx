@@ -20,7 +20,12 @@ export const StockChart: React.FC<ChartProps> = ({ symbol, name }) => {
   useEffect(() => {
     const saved = localStorage.getItem(`markers_${symbol}`);
     if (saved) {
-      try { setMarkers(JSON.parse(saved)); } catch (e) { setMarkers({}); }
+      try { 
+        const parsed = JSON.parse(saved);
+        setMarkers(parsed && typeof parsed === 'object' ? parsed : {}); 
+      } catch (e) { 
+        setMarkers({}); 
+      }
     } else {
       setMarkers({});
     }
@@ -114,17 +119,18 @@ export const StockChart: React.FC<ChartProps> = ({ symbol, name }) => {
   }, [symbol, scale]);
 
   useEffect(() => {
-    if (!seriesRef.current || klineData.length === 0) return;
+    if (!seriesRef.current || !Array.isArray(klineData) || klineData.length === 0) return;
     
     const chartMarkers: any[] = [];
+    const safeMarkers = markers || {};
     klineData.forEach(item => {
-      if (markers[item.time]) {
+      if (item && item.time && safeMarkers[item.time]) {
         chartMarkers.push({
           time: item.time,
-          position: markers[item.time] === 'buy' ? 'belowBar' : 'aboveBar',
-          color: markers[item.time] === 'buy' ? '#ef4444' : '#22c55e',
-          shape: markers[item.time] === 'buy' ? 'arrowUp' : 'arrowDown',
-          text: markers[item.time] === 'buy' ? '买' : '卖',
+          position: safeMarkers[item.time] === 'buy' ? 'belowBar' : 'aboveBar',
+          color: safeMarkers[item.time] === 'buy' ? '#ef4444' : '#22c55e',
+          shape: safeMarkers[item.time] === 'buy' ? 'arrowUp' : 'arrowDown',
+          text: safeMarkers[item.time] === 'buy' ? '买' : '卖',
           size: 1,
         });
       }
