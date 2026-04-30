@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { createChart, ColorType, IChartApi, ISeriesApi, CandlestickSeries } from 'lightweight-charts';
+import { createChart, ColorType, IChartApi, ISeriesApi, CandlestickSeries, createSeriesMarkers } from 'lightweight-charts';
 
 interface ChartProps {
   symbol: string; // e.g. sh600000
@@ -12,6 +12,7 @@ export const StockChart: React.FC<ChartProps> = ({ symbol, name }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+  const markersPluginRef = useRef<any>(null);
   const [scale, setScale] = useState<'240' | '1680'>('240'); // 240 is daily, 1680 is weekly (dummy for "Yearly" feel)
   const [markers, setMarkers] = useState<Record<string, 'buy' | 'sell'>>({});
   const [klineData, setKlineData] = useState<any[]>([]);
@@ -60,6 +61,10 @@ export const StockChart: React.FC<ChartProps> = ({ symbol, name }) => {
 
     chartRef.current = chart;
     seriesRef.current = series;
+
+    // In lightweight-charts v5, markers are managed by a plugin
+    const seriesMarkers = createSeriesMarkers(series, []);
+    markersPluginRef.current = seriesMarkers;
 
     const fetchKline = async () => {
       try {
@@ -114,6 +119,7 @@ export const StockChart: React.FC<ChartProps> = ({ symbol, name }) => {
     return () => {
       chart.unsubscribeClick(clickHandler);
       window.removeEventListener('resize', handleResize);
+      markersPluginRef.current = null;
       chart.remove();
     };
   }, [symbol, scale]);
@@ -135,7 +141,9 @@ export const StockChart: React.FC<ChartProps> = ({ symbol, name }) => {
         });
       }
     });
-    seriesRef.current.setMarkers(chartMarkers);
+    if (markersPluginRef.current) {
+      markersPluginRef.current.setMarkers(chartMarkers);
+    }
   }, [markers, klineData]);
 
   return (
