@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus, Trash2, TrendingUp, TrendingDown, GripVertical } from 'lucide-react';
 import { Reorder } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
@@ -53,11 +53,7 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
   useEffect(() => {
     const fetchCloudData = async () => {
       try {
-        const { data: watchData } = await supabase
-          .from('watchlist')
-          .select('symbol, sort_order')
-          .order('sort_order', { ascending: true });
-          
+        const { data: watchData } = await supabase.from('watchlist').select('symbol');
         if (watchData && watchData.length > 0) {
           setCodes(watchData.map(d => d.symbol));
         } else {
@@ -199,10 +195,7 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
     if (!codes.includes(code)) {
       setCodes(prev => [...prev, code]);
       try {
-         await supabase.from('watchlist').insert({ 
-           symbol: code,
-           sort_order: codes.length 
-         });
+         await supabase.from('watchlist').insert({ symbol: code });
       } catch(e) {
          console.error('Error adding to watchlist', e);
       }
@@ -253,21 +246,8 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
   }, 0);
 
 
-  const handleReorder = async (newCodes: string[]) => {
+  const handleReorder = (newCodes: string[]) => {
     setCodes(newCodes);
-    
-    // Sync new order to cloud
-    try {
-      const updates = newCodes.map((code, index) => 
-        supabase
-          .from('watchlist')
-          .update({ sort_order: index })
-          .eq('symbol', code)
-      );
-      await Promise.all(updates);
-    } catch (e) {
-      console.error('Failed to sync order to cloud', e);
-    }
   };
 
   return (
