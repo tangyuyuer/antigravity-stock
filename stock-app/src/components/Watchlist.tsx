@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Plus, Trash2, TrendingUp, TrendingDown, GripVertical } from 'lucide-react';
 import { Reorder } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
@@ -41,10 +41,12 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
   const [announcements, setAnnouncements] = useState<Record<string, StockAnnouncement>>({});
   const [readAnnouncements, setReadAnnouncements] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const [mounted, setMounted] = useState(false);
 
   const positionsRef = useRef(positions);
   const quotesRef = useRef(quotes);
   const syncTimeoutsRef = useRef<Record<string, NodeJS.Timeout>>({});
+  const orderSyncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const syncPromisesRef = useRef<Record<string, Promise<any>>>({});
 
   useEffect(() => { positionsRef.current = positions; }, [positions]);
@@ -53,7 +55,11 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
   useEffect(() => {
     const fetchCloudData = async () => {
       try {
-        const { data: watchData } = await supabase.from('watchlist').select('symbol');
+        const { data: watchData } = await supabase
+          .from('watchlist')
+          .select('symbol, sort_order')
+          .order('sort_order', { ascending: true });
+        
         if (watchData && watchData.length > 0) {
           setCodes(watchData.map(d => d.symbol));
         } else {
@@ -79,6 +85,7 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
     };
     
     fetchCloudData();
+    setMounted(true);
 
     const savedReadAnn = localStorage.getItem('read_announcements');
     if (savedReadAnn) setReadAnnouncements(JSON.parse(savedReadAnn));
@@ -246,9 +253,36 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
   }, 0);
 
 
+  const syncOrderToCloud = async (newCodes: string[]) => {
+    try {
+      const updates = newCodes.map((symbol, index) => ({ symbol, sort_order: index + 1 }));
+      await Promise.all(
+        updates.map(({ symbol, sort_order }) =>
+          supabase
+            .from('watchlist')
+            .update({ sort_order })
+            .match({ symbol })
+        )
+      );
+    } catch (e) {
+      console.error('Failed to sync order to cloud', e);
+    }
+  };
+
   const handleReorder = (newCodes: string[]) => {
     setCodes(newCodes);
+    
+    if (orderSyncTimeoutRef.current) {
+      clearTimeout(orderSyncTimeoutRef.current);
+    }
+
+    orderSyncTimeoutRef.current = setTimeout(() => {
+      syncOrderToCloud(newCodes);
+      orderSyncTimeoutRef.current = null;
+    }, 1000);
   };
+
+  if (!mounted) return null;
 
   return (
     <div className="space-y-4">
