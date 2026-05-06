@@ -181,7 +181,7 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
             name: name,
             buyPrice: currentPos.cost ? parseFloat(currentPos.cost) : null,
             quantity: currentPos.amount ? parseInt(currentPos.amount, 10) : null,
-            isToday: currentPos.isToday,
+            // isToday: currentPos.isToday, // Temporarily disabled to avoid DB errors
             type: type
           }, { onConflict: 'symbol' });
 
@@ -194,7 +194,7 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
                   name: name,
                   buyPrice: currentPos.cost ? parseFloat(currentPos.cost) : null,
                   quantity: currentPos.amount ? parseInt(currentPos.amount, 10) : null,
-                  isToday: currentPos.isToday,
+                  // isToday: currentPos.isToday, // Temporarily disabled to avoid DB errors
                   type: type
                 });
              }
