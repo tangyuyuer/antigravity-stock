@@ -20,6 +20,7 @@ interface Position {
   code: string;
   cost: string;
   amount: string;
+  isToday?: boolean;
 }
 
 interface StockAnnouncement {
@@ -73,7 +74,8 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
             newPositions[row.symbol] = {
               code: row.symbol,
               cost: row.buyPrice ? row.buyPrice.toString() : '',
-              amount: row.quantity ? row.quantity.toString() : ''
+              amount: row.quantity ? row.quantity.toString() : '',
+              isToday: row.isToday || false
             };
           });
           setPositions(newPositions);
@@ -150,10 +152,10 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
     }
   };
 
-  const updatePosition = (code: string, field: 'cost' | 'amount', value: string) => {
+  const updatePosition = (code: string, field: 'cost' | 'amount' | 'isToday', value: string | boolean) => {
     // Optimistic UI update
     setPositions(prev => {
-      const current = prev[code] || { code, cost: '', amount: '' };
+      const current = prev[code] || { code, cost: '', amount: '', isToday: false };
       const next = { ...current, [field]: value };
       return { ...prev, [code]: next };
     });
@@ -169,19 +171,33 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
       const name = quote?.name || '';
       const type = code.startsWith('sh') ? 'sh' : (code.startsWith('sz') ? 'sz' : 'us');
       
-      const currentPos = positionsRef.current[code] || { cost: '', amount: '' };
+      const currentPos = positionsRef.current[code] || { cost: '', amount: '', isToday: false };
 
       const doSync = async () => {
         try {
-          await supabase.from('positions').delete().match({ symbol: code });
-          if (currentPos.cost || currentPos.amount) {
-             await supabase.from('positions').insert({
-               symbol: code,
-               name: name,
-               buyPrice: currentPos.cost ? parseFloat(currentPos.cost) : null,
-               quantity: currentPos.amount ? parseInt(currentPos.amount, 10) : null,
-               type: type
-             });
+          // Attempt to update existing or insert new
+          const { error: upsertError } = await supabase.from('positions').upsert({
+            symbol: code,
+            name: name,
+            buyPrice: currentPos.cost ? parseFloat(currentPos.cost) : null,
+            quantity: currentPos.amount ? parseInt(currentPos.amount, 10) : null,
+            isToday: currentPos.isToday,
+            type: type
+          }, { onConflict: 'symbol' });
+
+          if (upsertError) {
+             console.warn('Upsert failed, falling back to delete/insert', upsertError);
+             await supabase.from('positions').delete().match({ symbol: code });
+             if (currentPos.cost || currentPos.amount) {
+                await supabase.from('positions').insert({
+                  symbol: code,
+                  name: name,
+                  buyPrice: currentPos.cost ? parseFloat(currentPos.cost) : null,
+                  quantity: currentPos.amount ? parseInt(currentPos.amount, 10) : null,
+                  isToday: currentPos.isToday,
+                  type: type
+                });
+             }
           }
         } catch(e) {
           console.error('Error syncing position', e);
@@ -246,8 +262,17 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
 
   const todayProfit = quotes.reduce((acc, s) => {
     const pos = positions[s.code];
-    if (pos && pos.amount && s.prevClose) {
-      return acc + (parseFloat(s.price) - parseFloat(s.prevClose)) * parseFloat(pos.amount);
+    if (pos && pos.amount) {
+      const amount = parseFloat(pos.amount);
+      const currentPrice = parseFloat(s.price);
+      const prevClose = parseFloat(s.prevClose);
+      const cost = parseFloat(pos.cost);
+      
+      const referencePrice = (pos.isToday && !isNaN(cost)) ? cost : prevClose;
+      
+      if (!isNaN(currentPrice) && !isNaN(referencePrice)) {
+        return acc + (currentPrice - referencePrice) * amount;
+      }
     }
     return acc;
   }, 0);
@@ -375,7 +400,7 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
             if (!s) return null;
 
             const isUp = parseFloat(s.pct) >= 0;
-            const pos = positions[s.code] || { cost: '', amount: '' };
+            const pos = positions[s.code] || { cost: '', amount: '', isToday: false };
             const currentPrice = parseFloat(s.price);
             const costPrice = parseFloat(pos.cost);
             const amount = parseFloat(pos.amount);
@@ -414,21 +439,31 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
                 </div>
 
                 <div className="col-span-2" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex flex-col gap-1">
-                    <input
-                      type="number"
-                      placeholder="成本价"
-                      value={pos.cost}
-                      onChange={(e) => updatePosition(s.code, 'cost', e.target.value)}
-                      className="bg-black/20 border border-white/10 rounded px-2 py-0.5 text-[10px] w-20 font-sans focus:border-blue-500/50 outline-none transition-all"
-                    />
-                    <input
-                      type="number"
-                      placeholder="持仓量"
-                      value={pos.amount}
-                      onChange={(e) => updatePosition(s.code, 'amount', e.target.value)}
-                      className="bg-black/20 border border-white/10 rounded px-2 py-0.5 text-[10px] w-20 font-sans focus:border-blue-500/50 outline-none transition-all"
-                    />
+                  <div className="flex items-center gap-2">
+                    <div className="flex flex-col gap-1">
+                      <input
+                        type="number"
+                        placeholder="成本价"
+                        value={pos.cost}
+                        onChange={(e) => updatePosition(s.code, 'cost', e.target.value)}
+                        className="bg-black/20 border border-white/10 rounded px-2 py-0.5 text-[10px] w-20 font-sans focus:border-blue-500/50 outline-none transition-all"
+                      />
+                      <input
+                        type="number"
+                        placeholder="持仓量"
+                        value={pos.amount}
+                        onChange={(e) => updatePosition(s.code, 'amount', e.target.value)}
+                        className="bg-black/20 border border-white/10 rounded px-2 py-0.5 text-[10px] w-20 font-sans focus:border-blue-500/50 outline-none transition-all"
+                      />
+                    </div>
+                    <button 
+                      onClick={() => updatePosition(s.code, 'isToday', !pos.isToday)}
+                      className={`flex flex-col items-center justify-center w-8 h-8 rounded-lg border transition-all ${pos.isToday ? 'bg-orange-500/20 border-orange-500/50 text-orange-500' : 'bg-white/5 border-white/10 text-gray-500 hover:border-white/20'}`}
+                      title={pos.isToday ? "已标记为今日买入 (按成本价计算当日盈亏)" : "标记为今日买入"}
+                    >
+                      <span className="text-[10px] font-black leading-none">今</span>
+                      <span className="text-[8px] font-bold leading-none mt-0.5">{pos.isToday ? 'T' : 'T+n'}</span>
+                    </button>
                   </div>
                 </div>
 
@@ -437,9 +472,9 @@ export const Watchlist: React.FC<WatchlistProps> = ({ onSelect }) => {
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-gray-500 font-bold">当日</span>
-                        <span className={`text-sm font-bold font-sans ${parseFloat(s.change) >= 0 ? 'text-red-500' : 'text-emerald-500'}`}>
-                          {(parseFloat(s.price) - parseFloat(s.prevClose)) * amount >= 0 ? '+' : ''}
-                          {((parseFloat(s.price) - parseFloat(s.prevClose)) * amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        <span className={`text-sm font-bold font-sans ${((currentPrice - (pos.isToday ? costPrice : parseFloat(s.prevClose))) * amount) >= 0 ? 'text-red-500' : 'text-emerald-500'}`}>
+                          {((currentPrice - (pos.isToday ? costPrice : parseFloat(s.prevClose))) * amount) >= 0 ? '+' : ''}
+                          {((currentPrice - (pos.isToday ? costPrice : parseFloat(s.prevClose))) * amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
