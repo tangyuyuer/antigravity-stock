@@ -123,12 +123,15 @@ export const StockChart: React.FC<ChartProps> = ({ symbol, name }) => {
         if (newType) newMarkers[timeStr] = newType;
         else delete newMarkers[timeStr];
         
-        // Sync to Supabase asynchronously
+        // Sync to Supabase asynchronously using upsert
         (async () => {
           try {
             if (newType) {
-              await supabase.from('markers').delete().match({ symbol, time: timeStr });
-              await supabase.from('markers').insert({ symbol, time: timeStr, type: newType });
+              await supabase.from('markers').upsert({ 
+                symbol, 
+                time: timeStr, 
+                type: newType 
+              }, { onConflict: 'symbol,time' });
             } else {
               await supabase.from('markers').delete().match({ symbol, time: timeStr });
             }
